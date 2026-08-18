@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учёт домашних финансов</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 Учёт домашних финансов</h1>
+        </header>
+
+        <section class="summary-section">
+            <div class="summary-card income">
+                <h3>Доходы</h3>
+                <p id="total-income">0 ₽</p>
+            </div>
+            <div class="summary-card expense">
+                <h3>Расходы</h3>
+                <p id="total-expense">0 ₽</p>
+            </div>
+            <div class="summary-card balance">
+                <h3>Баланс</h3>
+                <p id="total-balance">0 ₽</p>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2>Добавить операцию</h2>
+            <form id="transaction-form">
+                <div class="form-group">
+                    <label for="description">Описание</label>
+                    <input type="text" id="description" required placeholder="Например: Продукты">
+                </div>
+                <div class="form-group">
+                    <label for="amount">Сумма (₽)</label>
+                    <input type="number" id="amount" required min="1" placeholder="1000">
+                </div>
+                <div class="form-group">
+                    <label for="type">Тип операции</label>
+                    <select id="type">
+                        <option value="income">Доход</option>
+                        <option value="expense">Расход</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="category">Категория</label>
+                    <select id="category">
+                        <option value="salary">Зарплата</option>
+                        <option value="food">Продукты</option>
+                        <option value="transport">Транспорт</option>
+                        <option value="utilities">Коммунальные услуги</option>
+                        <option value="entertainment">Развлечения</option>
+                        <option value="other">Другое</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-add">Добавить</button>
+            </form>
+        </section>
+
+        <section class="transactions-section">
+            <h2>История операций</h2>
+            <div class="filter-controls">
+                <button id="filter-all" class="filter-btn active">Все</button>
+                <button id="filter-income" class="filter-btn">Доходы</button>
+                <button id="filter-expense" class="filter-btn">Расходы</button>
+            </div>
+            <ul id="transaction-list" class="transaction-list">
+                <!-- Transactions will be added here -->
+            </ul>
+            <button id="clear-all" class="btn-clear">Очистить всё</button>
+        </section>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
