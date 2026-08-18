@@ -2,10 +2,9 @@
 # Dependencies
 node_modules/
 
-# Build artifacts
-dist/
-build/
-*.js.map
+# Logs and temp files
+*.log
+*.tmp
 
 # Environment
 .env
@@ -15,11 +14,6 @@ build/
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
-
-# Logs
-*.log
 
 # Python
 __pycache__/
@@ -27,119 +21,27 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-env/
 venv/
 .venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.gitattributes
-.next
-.semaphore/semaphore-cache
-.hypothesis/
-.checkov/
-.terragrunt-cache/
-.terraform.lock.hcl
-.terraform/
-*.tfstate
-*.tfstate.backup
-.venv.bak/
-.ansible/
-.vagrant/
-.docker/
-.kitchen/
-.nyc_output/
-nyc_output/
+.env
+
+# Build outputs
+dist/
+build/
+target/
+*.min.js
+*.min.css
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Coverage reports
 coverage/
 htmlcov/
-.pytest_cache/
-.mypy_cache/
-.helm/
-.eks/
-.aws-sam/
-.serverless/
-.vercel/
-.now/
-.netlify/
-firebase-debug.log
-firebase-debug.*.log
-.jscpd/
-.sfdx/
-.sfdx/
-.clasp/
-.clasp.json
-.nbextensions/
-.ipynb_checkpoints/
-.spyderproject
-.spyproject
-.ropeproject
-.site-packages
-.eggs/
-.egg-info/
-.installed.cfg
-.lib/
-.libs/
-include/
-lib/
-libs/
-src/
-wheelhouse/
-.packages
-.pyup.yml
-.bandit
-.pre-commit-config.yaml
-.flake8
-.isort.cfg
-.black
-.mergify/
-.mergify.yml
-.deepsource.toml
-.codeclimate.yml
-.lgtm.yml
-.reviewdog.yml
-.wercker/
-wercker.yml
-.direnv/
-.envrc
-.terraform/
-*.tfstate
-*.tfstate.backup
-.terragrunt-cache/
-.ansible/
-.vagrant/
-.docker/
-.kitchen/
-.nyc_output/
-nyc_output/
 .coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.gitattributes
-.next
-.semaphore/semaphore-cache
-.hypothesis/
-.checkov/
-.terragrunt-cache/
-.terraform.lock.hcl
-.terraform/
-*.tfstate
-*.tfstate.backup
-.venv.bak/
-.ansible/
-.vagrant/
-.docker/
-.kitchen/
-.nyc_output/
-nyc_output/
+
+# IDE specific
+*.swp
+*.swo
 ```

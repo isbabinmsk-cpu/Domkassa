@@ -10,10 +10,25 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <button class="menu-toggle" id="menu-toggle" aria-label="Открыть меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1>💰 FinancePRO</h1>
+            <div class="mobile-header-spacer"></div>
+        </header>
+
+        <!-- Overlay for mobile menu -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
         <!-- Sidebar Navigation -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h1>💰 FinancePRO</h1>
+                <button class="sidebar-close" id="sidebar-close" aria-label="Закрыть меню">&times;</button>
             </div>
             <nav class="sidebar-nav">
                 <button class="nav-btn active" data-tab="dashboard">
@@ -51,6 +66,30 @@
                 </button>
             </div>
         </aside>
+
+        <!-- Bottom Navigation for Mobile -->
+        <nav class="bottom-nav" id="bottom-nav">
+            <button class="bottom-nav-btn active" data-tab="dashboard">
+                <span class="icon">📊</span>
+                <span>Обзор</span>
+            </button>
+            <button class="bottom-nav-btn" data-tab="transactions">
+                <span class="icon">💳</span>
+                <span>Операции</span>
+            </button>
+            <button class="bottom-nav-btn" data-tab="budgets">
+                <span class="icon">🎯</span>
+                <span>Бюджеты</span>
+            </button>
+            <button class="bottom-nav-btn" data-tab="accounts">
+                <span class="icon">🏦</span>
+                <span>Счета</span>
+            </button>
+            <button class="bottom-nav-btn" data-tab="settings">
+                <span class="icon">⚙️</span>
+                <span>Настройки</span>
+            </button>
+        </nav>
 
         <!-- Main Content -->
         <main class="main-content">
