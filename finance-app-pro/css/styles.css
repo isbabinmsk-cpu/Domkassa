@@ -858,6 +858,111 @@ form {
     display: block;
 }
 
+/* Mobile Header */
+.mobile-header {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 99;
+    padding: 0 1rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mobile-header h1 {
+    font-size: 1.25rem;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.menu-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.menu-toggle span {
+    width: 100%;
+    height: 3px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: var(--transition);
+}
+
+.sidebar-close {
+    display: none;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0.5rem;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 98;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+}
+
+/* Bottom Navigation for Mobile */
+.bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+    z-index: 99;
+    padding: 0.5rem 0;
+    justify-content: space-around;
+}
+
+.bottom-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: var(--transition);
+}
+
+.bottom-nav-btn .icon {
+    font-size: 1.5rem;
+}
+
+.bottom-nav-btn.active {
+    color: var(--primary-color);
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .dashboard-grid,
@@ -867,13 +972,36 @@ form {
 }
 
 @media (max-width: 768px) {
+    .mobile-header {
+        display: flex;
+    }
+    
+    .sidebar-close {
+        display: block;
+    }
+    
     .sidebar {
         transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .sidebar-overlay.active {
+        display: block;
     }
     
     .main-content {
         margin-left: 0;
         padding: 1rem;
+        padding-top: 70px;
+        padding-bottom: 80px;
+    }
+    
+    .bottom-nav {
+        display: flex;
     }
     
     .summary-cards {
