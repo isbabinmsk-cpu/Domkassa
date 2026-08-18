@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учёт домашних финансов PRO</title>
+    <link rel="stylesheet" href="css/styles.css?v=2.0.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>💰 FinancePRO</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-tab="dashboard">
+                    <span class="icon">📊</span>
+                    <span>Обзор</span>
+                </button>
+                <button class="nav-btn" data-tab="transactions">
+                    <span class="icon">💳</span>
+                    <span>Операции</span>
+                </button>
+                <button class="nav-btn" data-tab="budgets">
+                    <span class="icon">🎯</span>
+                    <span>Бюджеты</span>
+                </button>
+                <button class="nav-btn" data-tab="categories">
+                    <span class="icon">🏷️</span>
+                    <span>Категории</span>
+                </button>
+                <button class="nav-btn" data-tab="accounts">
+                    <span class="icon">🏦</span>
+                    <span>Счета</span>
+                </button>
+                <button class="nav-btn" data-tab="analytics">
+                    <span class="icon">📈</span>
+                    <span>Аналитика</span>
+                </button>
+                <button class="nav-btn" data-tab="settings">
+                    <span class="icon">⚙️</span>
+                    <span>Настройки</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-btn" title="Переключить тему">
+                    <span class="icon">🌙</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <section id="dashboard" class="tab-content active">
+                <header class="page-header">
+                    <h2>Обзор финансов</h2>
+                    <button class="btn btn-primary" id="add-transaction-btn">+ Добавить операцию</button>
+                </header>
+                
+                <div class="summary-cards">
+                    <div class="card summary-card income">
+                        <div class="card-icon">📥</div>
+                        <div class="card-content">
+                            <h3>Доходы</h3>
+                            <p class="amount" id="total-income">0 ₽</p>
+                            <span class="period">за этот месяц</span>
+                        </div>
+                    </div>
+                    <div class="card summary-card expense">
+                        <div class="card-icon">📤</div>
+                        <div class="card-content">
+                            <h3>Расходы</h3>
+                            <p class="amount" id="total-expense">0 ₽</p>
+                            <span class="period">за этот месяц</span>
+                        </div>
+                    </div>
+                    <div class="card summary-card balance">
+                        <div class="card-icon">💰</div>
+                        <div class="card-content">
+                            <h3>Баланс</h3>
+                            <p class="amount" id="total-balance">0 ₽</p>
+                            <span class="period">общий</span>
+                        </div>
+                    </div>
+                    <div class="card summary-card savings">
+                        <div class="card-icon">🐷</div>
+                        <div class="card-content">
+                            <h3>Накопления</h3>
+                            <p class="amount" id="total-savings">0 ₽</p>
+                            <span class="period">в бюджетах</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card chart-card">
+                        <h3>Динамика доходов и расходов</h3>
+                        <canvas id="main-chart"></canvas>
+                    </div>
+                    <div class="card chart-card">
+                        <h3>Структура расходов</h3>
+                        <canvas id="expense-pie-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card recent-transactions">
+                    <h3>Последние операции</h3>
+                    <div class="transactions-list" id="recent-transactions-list"></div>
+                    <button class="btn btn-secondary view-all-btn" data-tab="transactions">Все операции</button>
+                </div>
+            </section>
+
+            <!-- Transactions Tab -->
+            <section id="transactions" class="tab-content">
+                <header class="page-header">
+                    <h2>Все операции</h2>
+                    <button class="btn btn-primary" id="add-transaction-btn-2">+ Добавить операцию</button>
+                </header>
+
+                <div class="filters-bar">
+                    <div class="filter-group">
+                        <label>Тип:</label>
+                        <select id="filter-type">
+                            <option value="all">Все</option>
+                            <option value="income">Доходы</option>
+                            <option value="expense">Расходы</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Категория:</label>
+                        <select id="filter-category"></select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Счет:</label>
+                        <select id="filter-account"></select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Период:</label>
+                        <input type="date" id="filter-date-from">
+                        <span>—</span>
+                        <input type="date" id="filter-date-to">
+                    </div>
+                    <button class="btn btn-secondary" id="apply-filters">Применить</button>
+                    <button class="btn btn-outline" id="reset-filters">Сбросить</button>
+                </div>
+
+                <div class="transactions-table-container card">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Описание</th>
+                                <th>Категория</th>
+                                <th>Счет</th>
+                                <th>Сумма</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Budgets Tab -->
+            <section id="budgets" class="tab-content">
+                <header class="page-header">
+                    <h2>Бюджеты по категориям</h2>
+                    <button class="btn btn-primary" id="add-budget-btn">+ Создать бюджет</button>
+                </header>
+
+                <div class="budgets-grid" id="budgets-container"></div>
+            </section>
+
+            <!-- Categories Tab -->
+            <section id="categories" class="tab-content">
+                <header class="page-header">
+                    <h2>Категории операций</h2>
+                    <button class="btn btn-primary" id="add-category-btn">+ Добавить категорию</button>
+                </header>
+
+                <div class="categories-container">
+                    <div class="category-section">
+                        <h3>📥 Категории доходов</h3>
+                        <div class="categories-list" id="income-categories"></div>
+                    </div>
+                    <div class="category-section">
+                        <h3>📤 Категории расходов</h3>
+                        <div class="categories-list" id="expense-categories"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Accounts Tab -->
+            <section id="accounts" class="tab-content">
+                <header class="page-header">
+                    <h2>Финансовые счета</h2>
+                    <button class="btn btn-primary" id="add-account-btn">+ Добавить счет</button>
+                </header>
+
+                <div class="accounts-grid" id="accounts-container"></div>
+            </section>
+
+            <!-- Analytics Tab -->
+            <section id="analytics" class="tab-content">
+                <header class="page-header">
+                    <h2>Аналитика и отчёты</h2>
+                    <div class="analytics-controls">
+                        <select id="analytics-period">
+                            <option value="week">Неделя</option>
+                            <option value="month" selected>Месяц</option>
+                            <option value="quarter">Квартал</option>
+                            <option value="year">Год</option>
+                        </select>
+                        <button class="btn btn-outline" id="export-report">📥 Экспорт отчёта</button>
+                    </div>
+                </header>
+
+                <div class="analytics-grid">
+                    <div class="card chart-card full-width">
+                        <h3>Динамика по месяцам</h3>
+                        <canvas id="analytics-line-chart"></canvas>
+                    </div>
+                    <div class="card chart-card">
+                        <h3>Доходы vs Расходы</h3>
+                        <canvas id="analytics-bar-chart"></canvas>
+                    </div>
+                    <div class="card chart-card">
+                        <h3>Топ категорий расходов</h3>
+                        <canvas id="analytics-top-categories"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Статистика</h3>
+                    <div class="stats-grid" id="analytics-stats"></div>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section id="settings" class="tab-content">
+                <header class="page-header">
+                    <h2>Настройки приложения</h2>
+                </header>
+
+                <div class="settings-container">
+                    <div class="card settings-section">
+                        <h3>🎨 Оформление</h3>
+                        <div class="setting-item">
+                            <label>Тема оформления</label>
+                            <select id="setting-theme">
+                                <option value="light">Светлая</option>
+                                <option value="dark">Тёмная</option>
+                                <option value="auto">Авто (по системе)</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>Валюта</label>
+                            <select id="setting-currency">
+                                <option value="RUB">₽ Рубль</option>
+                                <option value="USD">$ Доллар</option>
+                                <option value="EUR">€ Евро</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>Язык интерфейса</label>
+                            <select id="setting-language">
+                                <option value="ru">Русский</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card settings-section">
+                        <h3>💾 Данные</h3>
+                        <div class="setting-item">
+                            <button class="btn btn-outline" id="export-data">📥 Экспорт данных (JSON)</button>
+                            <button class="btn btn-outline" id="import-data">📤 Импорт данных</button>
+                            <input type="file" id="import-file" accept=".json" style="display: none;">
+                        </div>
+                        <div class="setting-item warning">
+                            <button class="btn btn-danger" id="clear-all-data">⚠️ Очистить все данные</button>
+                        </div>
+                    </div>
+
+                    <div class="card settings-section">
+                        <h3>ℹ️ О приложении</h3>
+                        <p>FinancePRO v2.0.0</p>
+                        <p>Профессиональная система учёта домашних финансов</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Add/Edit Transaction -->
+    <div class="modal" id="transaction-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="transaction-modal-title">Добавить операцию</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="transaction-form">
+                <input type="hidden" id="transaction-id">
+                <div class="form-group">
+                    <label>Тип операции *</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="type" value="income" required>
+                            <span>📥 Доход</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="type" value="expense" checked>
+                            <span>📤 Расход</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Сумма *</label>
+                    <input type="number" id="transaction-amount" step="0.01" min="0.01" required placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Категория *</label>
+                    <select id="transaction-category" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Счет *</label>
+                    <select id="transaction-account" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Дата *</label>
+                    <input type="date" id="transaction-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="transaction-description" rows="3" placeholder="Комментарий к операции"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline modal-close">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Add/Edit Budget -->
+    <div class="modal" id="budget-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="budget-modal-title">Создать бюджет</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="budget-form">
+                <input type="hidden" id="budget-id">
+                <div class="form-group">
+                    <label>Категория *</label>
+                    <select id="budget-category" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Лимит на месяц *</label>
+                    <input type="number" id="budget-limit" step="0.01" min="1" required placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Цвет индикатора</label>
+                    <input type="color" id="budget-color" value="#4CAF50">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline modal-close">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Add/Edit Category -->
+    <div class="modal" id="category-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="category-modal-title">Добавить категорию</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="category-form">
+                <input type="hidden" id="category-id">
+                <div class="form-group">
+                    <label>Тип *</label>
+                    <select id="category-type" required>
+                        <option value="expense">Расход</option>
+                        <option value="income">Доход</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Название *</label>
+                    <input type="text" id="category-name" required placeholder="Например: Продукты">
+                </div>
+                <div class="form-group">
+                    <label>Иконка</label>
+                    <input type="text" id="category-icon" placeholder="🛒" maxlength="2">
+                </div>
+                <div class="form-group">
+                    <label>Цвет</label>
+                    <input type="color" id="category-color" value="#2196F3">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline modal-close">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Add/Edit Account -->
+    <div class="modal" id="account-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="account-modal-title">Добавить счет</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="account-form">
+                <input type="hidden" id="account-id">
+                <div class="form-group">
+                    <label>Название *</label>
+                    <input type="text" id="account-name" required placeholder="Например: Наличные">
+                </div>
+                <div class="form-group">
+                    <label>Тип счета *</label>
+                    <select id="account-type" required>
+                        <option value="cash">Наличные</option>
+                        <option value="bank">Банковский счёт</option>
+                        <option value="card">Банковская карта</option>
+                        <option value="investment">Инвестиционный</option>
+                        <option value="other">Другой</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Начальный баланс</label>
+                    <input type="number" id="account-balance" step="0.01" value="0" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Валюта</label>
+                    <select id="account-currency">
+                        <option value="RUB">₽ Рубль</option>
+                        <option value="USD">$ Доллар</option>
+                        <option value="EUR">€ Евро</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Цвет</label>
+                    <input type="color" id="account-color" value="#4CAF50">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline modal-close">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js?v=2.0.0"></script>
+</body>
+</html>
