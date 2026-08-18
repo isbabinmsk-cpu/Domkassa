@@ -14,6 +14,7 @@
         <header class="header">
             <div class="header-content">
                 <div class="logo">
+                    <button id="mobileMenuToggle" class="btn-icon mobile-menu-btn" title="Меню">☰</button>
                     <span class="logo-icon">💰</span>
                     <h1>Финансовый Учёт</h1>
                 </div>
@@ -26,8 +27,17 @@
             </div>
         </header>
 
+        <!-- Mobile Navigation Tabs -->
+        <nav id="mobileNav" class="mobile-nav">
+            <button class="nav-tab active" data-section="dashboard">📊 Главная</button>
+            <button class="nav-tab" data-section="add">➕ Добавить</button>
+            <button class="nav-tab" data-section="transactions">📋 Операции</button>
+            <button class="nav-tab" data-section="analytics">📈 Аналитика</button>
+            <button class="nav-tab" data-section="budgets">💰 Бюджеты</button>
+        </nav>
+
         <!-- Dashboard -->
-        <section class="dashboard">
+        <section class="dashboard" data-section="dashboard">
             <div class="stats-grid">
                 <div class="stat-card income">
                     <div class="stat-icon">📈</div>
@@ -63,7 +73,7 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Add Transaction Form -->
-            <section class="form-section">
+            <section class="form-section" data-section="add">
                 <h2 class="section-title">Добавить операцию</h2>
                 <form id="transactionForm" class="transaction-form">
                     <div class="form-row">
@@ -164,7 +174,7 @@
             </section>
 
             <!-- Transactions List -->
-            <section class="transactions-section">
+            <section class="transactions-section" data-section="transactions">
                 <div class="section-header">
                     <h2 class="section-title">История операций</h2>
                     <div class="view-options">
@@ -179,7 +189,7 @@
             </section>
 
             <!-- Analytics Section -->
-            <section class="analytics-section">
+            <section class="analytics-section" data-section="analytics">
                 <h2 class="section-title">Аналитика</h2>
                 <div class="analytics-grid">
                     <div class="chart-card">
@@ -194,7 +204,7 @@
             </section>
 
             <!-- Budget Section -->
-            <section class="budget-section">
+            <section class="budget-section" data-section="budgets">
                 <h2 class="section-title">Бюджеты по категориям</h2>
                 <div id="budgetsContainer" class="budgets-grid">
                     <!-- Budget cards will be rendered here -->
@@ -204,7 +214,7 @@
         </main>
 
         <!-- Footer -->
-        <footer class="footer">
+        <footer class="footer" data-section="footer">
             <p>&copy; 2024 Финансовый Учёт. Все данные хранятся локально.</p>
         </footer>
     </div>
