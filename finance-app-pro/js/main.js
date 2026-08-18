@@ -6,7 +6,17 @@ import { app } from './modules/app.js';
 
 // Initialize application when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('FinancePRO v2.0.0 initializing...');
+    console.log('FinancePRO v2.0.1 initializing...');
+    
+    // Check for required browser features
+    if (!window.localStorage) {
+        alert('Ваш браузер не поддерживает localStorage. Приложение может работать некорректно.');
+    }
+    
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js не загружен. Проверьте подключение к интернету.');
+    }
+    
     app.init();
     console.log('FinancePRO initialized successfully!');
 });

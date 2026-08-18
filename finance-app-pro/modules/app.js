@@ -264,11 +264,37 @@ export const app = {
     handleTransactionSubmit() {
         const id = document.getElementById('transaction-id').value;
         const type = document.querySelector('input[name="type"]:checked').value;
-        const amount = parseFloat(document.getElementById('transaction-amount').value);
+        const amountInput = document.getElementById('transaction-amount');
+        const amount = parseFloat(amountInput.value);
         const categoryId = document.getElementById('transaction-category').value;
         const accountId = document.getElementById('transaction-account').value;
         const date = document.getElementById('transaction-date').value;
         const description = document.getElementById('transaction-description').value;
+
+        // Валидация суммы
+        if (isNaN(amount) || amount <= 0) {
+            alert('Пожалуйста, введите корректную сумму (больше 0)');
+            amountInput.focus();
+            return;
+        }
+
+        // Валидация категории
+        if (!categoryId) {
+            alert('Пожалуйста, выберите категорию');
+            return;
+        }
+
+        // Валидация счёта
+        if (!accountId) {
+            alert('Пожалуйста, выберите счёт');
+            return;
+        }
+
+        // Валидация даты
+        if (!date) {
+            alert('Пожалуйста, выберите дату');
+            return;
+        }
 
         const transactionData = {
             type,
@@ -322,8 +348,22 @@ export const app = {
     handleBudgetSubmit() {
         const id = document.getElementById('budget-id').value;
         const categoryId = document.getElementById('budget-category').value;
-        const limit = parseFloat(document.getElementById('budget-limit').value);
+        const limitInput = document.getElementById('budget-limit');
+        const limit = parseFloat(limitInput.value);
         const color = document.getElementById('budget-color').value;
+
+        // Валидация лимита
+        if (isNaN(limit) || limit <= 0) {
+            alert('Пожалуйста, введите корректный лимит бюджета (больше 0)');
+            limitInput.focus();
+            return;
+        }
+
+        // Валидация категории
+        if (!categoryId) {
+            alert('Пожалуйста, выберите категорию');
+            return;
+        }
 
         const budgetData = { categoryId, limit, color };
 
@@ -371,9 +411,17 @@ export const app = {
     handleCategorySubmit() {
         const id = document.getElementById('category-id').value;
         const type = document.getElementById('category-type').value;
-        const name = document.getElementById('category-name').value;
+        const nameInput = document.getElementById('category-name');
+        const name = nameInput.value.trim();
         const icon = document.getElementById('category-icon').value || '📁';
         const color = document.getElementById('category-color').value;
+
+        // Валидация имени категории
+        if (!name || name.length < 2) {
+            alert('Название категории должно содержать минимум 2 символа');
+            nameInput.focus();
+            return;
+        }
 
         const categoryData = { type, name, icon, color };
 
@@ -421,11 +469,27 @@ export const app = {
 
     handleAccountSubmit() {
         const id = document.getElementById('account-id').value;
-        const name = document.getElementById('account-name').value;
+        const nameInput = document.getElementById('account-name');
+        const name = nameInput.value.trim();
         const type = document.getElementById('account-type').value;
-        const balance = parseFloat(document.getElementById('account-balance').value) || 0;
+        const balanceInput = document.getElementById('account-balance');
+        const balance = parseFloat(balanceInput.value) || 0;
         const currency = document.getElementById('account-currency').value;
         const color = document.getElementById('account-color').value;
+
+        // Валидация имени счёта
+        if (!name || name.length < 2) {
+            alert('Название счёта должно содержать минимум 2 символа');
+            nameInput.focus();
+            return;
+        }
+
+        // Валидация баланса
+        if (balance < 0) {
+            alert('Баланс не может быть отрицательным');
+            balanceInput.focus();
+            return;
+        }
 
         const accountData = { name, type, balance, currency, color };
 
@@ -497,7 +561,9 @@ export const app = {
         const a = document.createElement('a');
         a.href = url;
         a.download = `finance-report-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
     },
 
@@ -508,16 +574,39 @@ export const app = {
     importData(file) {
         if (!file) return;
 
+        // Проверка типа файла
+        if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+            alert('Пожалуйста, выберите JSON файл');
+            return;
+        }
+
+        // Проверка размера файла (максимум 5MB)
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert('Размер файла не должен превышать 5MB');
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target.result);
+                
+                // Валидация структуры данных
+                if (!data.transactions || !data.categories || !data.accounts) {
+                    throw new Error('Неверная структура файла');
+                }
+                
                 storage.importData(data);
                 this.renderAll();
                 alert('Данные успешно импортированы!');
             } catch (error) {
+                console.error('Import error:', error);
                 alert('Ошибка при импорте данных. Проверьте файл.');
             }
+        };
+        reader.onerror = () => {
+            alert('Ошибка чтения файла');
         };
         reader.readAsText(file);
     }
