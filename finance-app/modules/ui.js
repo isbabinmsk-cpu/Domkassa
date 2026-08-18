@@ -469,6 +469,7 @@ export const ui = {
      */
     setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('finance-app-theme', theme);
         const toggleBtn = document.getElementById('themeToggle');
         if (toggleBtn) {
             toggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
@@ -484,6 +485,14 @@ export const ui = {
         const newTheme = current === 'light' ? 'dark' : 'light';
         this.setTheme(newTheme);
         return newTheme;
+    },
+
+    /**
+     * Initialize theme from localStorage on page load
+     */
+    initTheme() {
+        const savedTheme = localStorage.getItem('finance-app-theme') || 'light';
+        this.setTheme(savedTheme);
     },
 
     /**
