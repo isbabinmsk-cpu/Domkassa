@@ -1,6 +1,29 @@
 /**
- * Storage Module - Handles localStorage operations
+ * Storage Module - Handles data operations with PostgreSQL backend
+ * Falls back to localStorage if server is unavailable
  */
+
+const API_BASE = '/api';
+
+// Check if server is available
+async function checkServerAvailability() {
+  try {
+    const response = await fetch(`${API_BASE}/settings`);
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
+let useServer = null;
+
+// Initialize storage mode
+async function initStorageMode() {
+  if (useServer === null) {
+    useServer = await checkServerAvailability();
+  }
+  return useServer;
+}
 
 const STORAGE_KEYS = {
     TRANSACTIONS: 'financepro_transactions',
@@ -40,16 +63,56 @@ const defaultSettings = {
 };
 
 export const storage = {
-    getTransactions() {
+    // Initialize storage mode on first use
+    async init() {
+        await initStorageMode();
+    },
+
+    // Transaction operations
+    async getTransactions() {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/transactions`);
+                if (!response.ok) throw new Error('Failed to fetch transactions');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const data = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
         return data ? JSON.parse(data) : [];
     },
 
-    saveTransactions(transactions) {
+    async saveTransactions(transactions) {
+        await this.init();
+        if (useServer) {
+            // Bulk save not supported by API, handled by individual operations
+            localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
+            return;
+        }
         localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
     },
 
-    addTransaction(transaction) {
+    async addTransaction(transaction) {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/transactions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(transaction)
+                });
+                if (!response.ok) throw new Error('Failed to add transaction');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const transactions = this.getTransactions();
         transaction.id = 'txn_' + Date.now();
         transaction.createdAt = new Date().toISOString();
@@ -58,7 +121,23 @@ export const storage = {
         return transaction;
     },
 
-    updateTransaction(id, updates) {
+    async updateTransaction(id, updates) {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/transactions/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updates)
+                });
+                if (!response.ok) throw new Error('Failed to update transaction');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const transactions = this.getTransactions();
         const index = transactions.findIndex(t => t.id === id);
         if (index !== -1) {
@@ -69,13 +148,37 @@ export const storage = {
         return null;
     },
 
-    deleteTransaction(id) {
+    async deleteTransaction(id) {
+        await this.init();
+        if (useServer) {
+            try {
+                await fetch(`${API_BASE}/transactions/${id}`, { method: 'DELETE' });
+                return;
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const transactions = this.getTransactions();
         const filtered = transactions.filter(t => t.id !== id);
         this.saveTransactions(filtered);
     },
 
-    getCategories() {
+    // Category operations
+    async getCategories() {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/categories`);
+                if (!response.ok) throw new Error('Failed to fetch categories');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const data = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
         if (!data) {
             this.saveCategories(defaultCategories);
@@ -84,11 +187,32 @@ export const storage = {
         return JSON.parse(data);
     },
 
-    saveCategories(categories) {
+    async saveCategories(categories) {
+        await this.init();
+        if (useServer) {
+            localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+            return;
+        }
         localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
     },
 
-    addCategory(category) {
+    async addCategory(category) {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/categories`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(category)
+                });
+                if (!response.ok) throw new Error('Failed to add category');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const categories = this.getCategories();
         category.id = 'cat_' + Date.now();
         categories.push(category);
@@ -96,7 +220,23 @@ export const storage = {
         return category;
     },
 
-    updateCategory(id, updates) {
+    async updateCategory(id, updates) {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/categories/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updates)
+                });
+                if (!response.ok) throw new Error('Failed to update category');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const categories = this.getCategories();
         const index = categories.findIndex(c => c.id === id);
         if (index !== -1) {
@@ -107,13 +247,37 @@ export const storage = {
         return null;
     },
 
-    deleteCategory(id) {
+    async deleteCategory(id) {
+        await this.init();
+        if (useServer) {
+            try {
+                await fetch(`${API_BASE}/categories/${id}`, { method: 'DELETE' });
+                return;
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const categories = this.getCategories();
         const filtered = categories.filter(c => c.id !== id);
         this.saveCategories(filtered);
     },
 
-    getAccounts() {
+    // Account operations
+    async getAccounts() {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/accounts`);
+                if (!response.ok) throw new Error('Failed to fetch accounts');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const data = localStorage.getItem(STORAGE_KEYS.ACCOUNTS);
         if (!data) {
             this.saveAccounts(defaultAccounts);
@@ -122,11 +286,32 @@ export const storage = {
         return JSON.parse(data);
     },
 
-    saveAccounts(accounts) {
+    async saveAccounts(accounts) {
+        await this.init();
+        if (useServer) {
+            localStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(accounts));
+            return;
+        }
         localStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(accounts));
     },
 
-    addAccount(account) {
+    async addAccount(account) {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/accounts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(account)
+                });
+                if (!response.ok) throw new Error('Failed to add account');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const accounts = this.getAccounts();
         account.id = 'acc_' + Date.now();
         account.createdAt = new Date().toISOString();
@@ -135,7 +320,23 @@ export const storage = {
         return account;
     },
 
-    updateAccount(id, updates) {
+    async updateAccount(id, updates) {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/accounts/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updates)
+                });
+                if (!response.ok) throw new Error('Failed to update account');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const accounts = this.getAccounts();
         const index = accounts.findIndex(a => a.id === id);
         if (index !== -1) {
@@ -146,22 +347,67 @@ export const storage = {
         return null;
     },
 
-    deleteAccount(id) {
+    async deleteAccount(id) {
+        await this.init();
+        if (useServer) {
+            try {
+                await fetch(`${API_BASE}/accounts/${id}`, { method: 'DELETE' });
+                return;
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const accounts = this.getAccounts();
         const filtered = accounts.filter(a => a.id !== id);
         this.saveAccounts(filtered);
     },
 
-    getBudgets() {
+    // Budget operations
+    async getBudgets() {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/budgets`);
+                if (!response.ok) throw new Error('Failed to fetch budgets');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const data = localStorage.getItem(STORAGE_KEYS.BUDGETS);
         return data ? JSON.parse(data) : [];
     },
 
-    saveBudgets(budgets) {
+    async saveBudgets(budgets) {
+        await this.init();
+        if (useServer) {
+            localStorage.setItem(STORAGE_KEYS.BUDGETS, JSON.stringify(budgets));
+            return;
+        }
         localStorage.setItem(STORAGE_KEYS.BUDGETS, JSON.stringify(budgets));
     },
 
-    addBudget(budget) {
+    async addBudget(budget) {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/budgets`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(budget)
+                });
+                if (!response.ok) throw new Error('Failed to add budget');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const budgets = this.getBudgets();
         budget.id = 'bud_' + Date.now();
         budget.createdAt = new Date().toISOString();
@@ -170,7 +416,23 @@ export const storage = {
         return budget;
     },
 
-    updateBudget(id, updates) {
+    async updateBudget(id, updates) {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/budgets/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updates)
+                });
+                if (!response.ok) throw new Error('Failed to update budget');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const budgets = this.getBudgets();
         const index = budgets.findIndex(b => b.id === id);
         if (index !== -1) {
@@ -181,13 +443,37 @@ export const storage = {
         return null;
     },
 
-    deleteBudget(id) {
+    async deleteBudget(id) {
+        await this.init();
+        if (useServer) {
+            try {
+                await fetch(`${API_BASE}/budgets/${id}`, { method: 'DELETE' });
+                return;
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const budgets = this.getBudgets();
         const filtered = budgets.filter(b => b.id !== id);
         this.saveBudgets(filtered);
     },
 
-    getSettings() {
+    // Settings operations
+    async getSettings() {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/settings`);
+                if (!response.ok) throw new Error('Failed to fetch settings');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
         if (!data) {
             this.saveSettings(defaultSettings);
@@ -196,18 +482,60 @@ export const storage = {
         return JSON.parse(data);
     },
 
-    saveSettings(settings) {
+    async saveSettings(settings) {
+        await this.init();
+        if (useServer) {
+            try {
+                await fetch(`${API_BASE}/settings`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
         localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
     },
 
-    updateSettings(updates) {
+    async updateSettings(updates) {
+        await this.init();
+        if (useServer) {
+            try {
+                const response = await fetch(`${API_BASE}/settings`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updates)
+                });
+                if (!response.ok) throw new Error('Failed to update settings');
+                return await response.json();
+            } catch (error) {
+                console.warn('Server unavailable, falling back to localStorage:', error);
+                useServer = false;
+            }
+        }
+        // Fallback to localStorage
         const settings = this.getSettings();
         const newSettings = { ...settings, ...updates };
         this.saveSettings(newSettings);
         return newSettings;
     },
 
-    clearAllData() {
+    async clearAllData() {
+        await this.init();
+        if (useServer) {
+            // Delete all transactions, categories, budgets via API
+            const transactions = await this.getTransactions();
+            for (const t of transactions) {
+                await this.deleteTransaction(t.id);
+            }
+            const budgets = await this.getBudgets();
+            for (const b of budgets) {
+                await this.deleteBudget(b.id);
+            }
+            // Note: Categories and accounts are typically kept as defaults
+        }
         localStorage.removeItem(STORAGE_KEYS.TRANSACTIONS);
         localStorage.removeItem(STORAGE_KEYS.CATEGORIES);
         localStorage.removeItem(STORAGE_KEYS.ACCOUNTS);
@@ -215,22 +543,22 @@ export const storage = {
         // Keep settings
     },
 
-    exportData() {
+    async exportData() {
         return {
-            transactions: this.getTransactions(),
-            categories: this.getCategories(),
-            accounts: this.getAccounts(),
-            budgets: this.getBudgets(),
-            settings: this.getSettings(),
+            transactions: await this.getTransactions(),
+            categories: await this.getCategories(),
+            accounts: await this.getAccounts(),
+            budgets: await this.getBudgets(),
+            settings: await this.getSettings(),
             exportedAt: new Date().toISOString()
         };
     },
 
-    importData(data) {
-        if (data.transactions) this.saveTransactions(data.transactions);
-        if (data.categories) this.saveCategories(data.categories);
-        if (data.accounts) this.saveAccounts(data.accounts);
-        if (data.budgets) this.saveBudgets(data.budgets);
-        if (data.settings) this.saveSettings(data.settings);
+    async importData(data) {
+        if (data.transactions) await this.saveTransactions(data.transactions);
+        if (data.categories) await this.saveCategories(data.categories);
+        if (data.accounts) await this.saveAccounts(data.accounts);
+        if (data.budgets) await this.saveBudgets(data.budgets);
+        if (data.settings) await this.saveSettings(data.settings);
     }
 };
