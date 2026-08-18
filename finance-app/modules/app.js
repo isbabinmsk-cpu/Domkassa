@@ -111,6 +111,26 @@ export const app = {
             viewGrid.addEventListener('click', () => this.setViewMode('grid'));
         }
 
+        // Mobile navigation tabs
+        const mobileNav = document.getElementById('mobileNav');
+        if (mobileNav) {
+            mobileNav.addEventListener('click', (e) => {
+                const tab = e.target.closest('.nav-tab');
+                if (tab) {
+                    this.switchMobileSection(tab.dataset.section);
+                }
+            });
+        }
+
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', () => {
+                // Toggle mobile menu - could show a dropdown with header actions
+                ui.showToast('Меню: используйте кнопки внизу для навигации', 'info');
+            });
+        }
+
         // Filters
         const filterType = document.getElementById('filterType');
         const filterCategory = document.getElementById('filterCategory');
@@ -456,6 +476,66 @@ export const app = {
 
         // Render charts
         this.renderCharts();
+        
+        // Initialize mobile section visibility
+        this.initMobileSections();
+    },
+
+    /**
+     * Initialize mobile sections visibility
+     */
+    initMobileSections() {
+        // Check if we're on mobile
+        if (window.innerWidth <= 768) {
+            document.body.classList.add('has-mobile-tabs');
+            // Show only dashboard by default
+            document.querySelectorAll('[data-section]').forEach(section => {
+                section.classList.remove('active');
+            });
+            const dashboard = document.querySelector('[data-section="dashboard"]');
+            if (dashboard) {
+                dashboard.classList.add('active');
+            }
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.section === 'dashboard');
+            });
+        } else {
+            document.body.classList.remove('has-mobile-tabs');
+            // Show all sections on desktop
+            document.querySelectorAll('[data-section]').forEach(section => {
+                section.style.display = '';
+            });
+        }
+    },
+
+    /**
+     * Switch mobile section visibility
+     * @param {string} sectionName - Section to show
+     */
+    switchMobileSection(sectionName) {
+        // Only apply on mobile
+        if (window.innerWidth > 768) return;
+        
+        document.body.classList.add('has-mobile-tabs');
+        
+        // Hide all sections
+        document.querySelectorAll('[data-section]').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // Show target section
+        const targetSection = document.querySelector(`[data-section="${sectionName}"]`);
+        if (targetSection) {
+            targetSection.classList.add('active');
+            // Scroll to top when switching sections
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Update nav tabs active state
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.section === sectionName);
+        });
     },
 
     /**

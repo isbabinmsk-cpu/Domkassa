@@ -103,6 +103,56 @@ body {
     align-items: center;
 }
 
+/* Mobile menu button - hidden by default on desktop */
+.mobile-menu-btn {
+    display: none;
+}
+
+/* Mobile Navigation Tabs */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+    padding: 8px 16px;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-nav .nav-tab {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border-radius: var(--radius-md);
+}
+
+.mobile-nav .nav-tab:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.mobile-nav .nav-tab.active {
+    color: var(--primary-color);
+    background: rgba(79, 70, 229, 0.1);
+}
+
+.mobile-nav .nav-tab span {
+    font-size: 1.25rem;
+}
+
 /* Buttons */
 .btn {
     padding: 10px 20px;
@@ -1001,6 +1051,7 @@ body {
 @media (max-width: 768px) {
     .app-container {
         padding: 12px;
+        padding-bottom: 80px; /* Space for mobile nav */
     }
     
     .header {
@@ -1008,8 +1059,24 @@ body {
     }
     
     .header-content {
-        flex-direction: column;
-        gap: 16px;
+        flex-direction: row;
+        gap: 12px;
+    }
+    
+    /* Show mobile menu button */
+    .mobile-menu-btn {
+        display: flex;
+    }
+    
+    /* Show mobile navigation */
+    .mobile-nav {
+        display: flex;
+        justify-content: space-around;
+    }
+    
+    /* Hide header actions on mobile, show in menu */
+    .header-actions {
+        display: none;
     }
     
     .stats-grid {
@@ -1057,11 +1124,22 @@ body {
     .toast-container {
         left: 12px;
         right: 12px;
-        bottom: 12px;
+        bottom: 80px; /* Above mobile nav */
     }
     
     .toast {
         min-width: auto;
+    }
+    
+    /* Section visibility for mobile tabs */
+    [data-section] {
+        display: none;
+    }
+    
+    [data-section].active,
+    [data-section="dashboard"].active,
+    body:not(.has-mobile-tabs) [data-section="dashboard"] {
+        display: block;
     }
 }
 
