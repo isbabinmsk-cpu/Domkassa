@@ -33,12 +33,15 @@ export const app = {
      * Initialize the application
      */
     async init() {
+        // Initialize theme first (before any rendering)
+        ui.initTheme();
+        
         // Load data from storage
         state.transactions = storage.getTransactions();
         state.budgets = storage.getBudgets();
         state.settings = storage.getSettings();
 
-        // Apply saved theme
+        // Apply saved theme from settings (override localStorage if exists)
         if (state.settings.theme) {
             ui.setTheme(state.settings.theme);
         }
