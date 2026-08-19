@@ -921,10 +921,13 @@ form {
     z-index: 98;
     opacity: 0;
     transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
 .sidebar-overlay.active {
+    display: block;
     opacity: 1;
+    pointer-events: auto;
 }
 
 /* Bottom Navigation for Mobile */
@@ -992,6 +995,8 @@ form {
     .sidebar-overlay.active {
         display: block;
     }
+    
+    /* Remove duplicate sidebar-overlay.active rule - already defined above */
     
     .main-content {
         margin-left: 0;

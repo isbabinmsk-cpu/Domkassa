@@ -298,6 +298,8 @@ export const app = {
         ui.renderTransactionsTable();
         ui.renderCategorySelects();
         ui.renderAccountSelects();
+        ui.renderCategoriesList();
+        ui.renderAccountsGrid();
         ui.renderBudgets();
         ui.renderMainChart();
         ui.renderExpensePieChart();
