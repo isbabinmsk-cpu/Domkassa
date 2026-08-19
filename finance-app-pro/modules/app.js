@@ -74,10 +74,6 @@ export const app = {
                 const tabId = e.currentTarget.dataset.tab;
                 ui.switchTab(tabId);
                 
-                // Update active state in sidebar nav
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                e.currentTarget.classList.add('active');
-                
                 // Render charts when switching to analytics tab
                 if (tabId === 'analytics') {
                     const period = document.getElementById('analytics-period')?.value || 'month';
@@ -259,7 +255,10 @@ export const app = {
         
         // Load settings into form
         const settings = storage.getSettings();
-        document.getElementById('setting-theme').value = settings.theme;
+        const themeSelect = document.getElementById('setting-theme');
+        if (themeSelect) {
+            themeSelect.value = settings.theme;
+        }
         document.getElementById('setting-currency').value = settings.currency;
         document.getElementById('setting-language').value = settings.language;
     },

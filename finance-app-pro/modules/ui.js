@@ -17,6 +17,16 @@ export const ui = {
         
         document.documentElement.setAttribute('data-theme', theme);
         this.updateThemeIcon(theme);
+        
+        // Restore active tab from localStorage
+        const savedTab = localStorage.getItem('financepro_activeTab');
+        if (savedTab) {
+            // Switch to saved tab (this also sets the nav button active state)
+            this.switchTab(savedTab);
+        } else {
+            // Default to dashboard if no saved tab
+            this.switchTab('dashboard');
+        }
     },
 
     setTheme(theme) {
@@ -64,6 +74,9 @@ export const ui = {
         if (tabContent) {
             tabContent.classList.add('active');
         }
+        
+        // Save active tab to localStorage
+        localStorage.setItem('financepro_activeTab', tabId);
     },
 
     formatCurrency(amount, currency = 'RUB') {
