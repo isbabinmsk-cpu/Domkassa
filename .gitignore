@@ -4,8 +4,6 @@
 __pycache__/
 *.o
 *.obj
-dist/
-build/
 *.class
 *.exe
 *.dll
@@ -17,27 +15,23 @@ build/
 .venv/
 venv/
 node_modules/
+dist/
+build/
 target/
 .gradle/
 .mypy_cache/
 .pytest_cache/
-julia-*/
-zig*/
 
 # Logs and temp files
 *.log
 *.tmp
 *.swp
 *.swo
-*.bak
-*.~
-*.orig
-*.py.swp
 
 # Environment
 .env
 .env.local
-.env.*
+*.env.*
 
 # Editors
 .vscode/
@@ -48,96 +42,21 @@ zig*/
 # System
 .DS_Store
 Thumbs.db
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Icon?
-Network Trash Folder
-Temporary Items
-VolumeIcon.icns
-*.nib
-profile
-*.xcodeproj
-xcuserdata/
-*.xcworkspace
-xcshareddata/
-DerivedData/
-*.swf
-*.swd
-*.suo
-*.sln.docstates
-*.userprefs
-*.useroptions
-*.user
-*.aps
-*.ncb
-*.opt
-*.plg
-*.bsc
-*.ilk
-*.pdb
-*.ipch
-*.opensdf
-*.sdf
-*.pidb
-*.iobj
-*.ipdb
-*.tlog
-*.res
-*.rsp
-*.pgc
-*.pgd
-*.cod
-*.tox
-.coverage
+
+# Coverage
 coverage/
 htmlcov/
-*.gcda
-*.gcno
-*.gcov
-*.lcov
-*.profraw
-*.profdata
-*.dynstr
-*.dynsym
-*.map
-*.lst
-*.stackdump
-*.stacktrace
-*.crash
-*.dmp
-*.log.*
-*.tmp.*
-*.temp.*
-*.tmp$
-*.~$
-*~
-*.backup
-*.bak
-*.old
-*.orig
-*.rej
-*.patch
-*.diff
-*.patch~
-*.diff~
-*.pyc
-*.pyo
-*.pyd
-*.so
-*.egg-info/
-*.egg
-*.whl
+.coverage
+
+# Compressed files
 *.zip
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
 *.gz
+*.tar
+*.tgz
 *.bz2
 *.xz
+*.7z
+*.rar
 *.zst
 *.lz4
 *.lzh
@@ -148,6 +67,8 @@ htmlcov/
 *.Z
 *.lz
 *.lzo
-*.7z
-*.rar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
 ```
