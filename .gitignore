@@ -1,1 +1,325 @@
-Nothing should be ignored based on the provided file changes. The only modified file is a source code file (`finance-app-pro/modules/app.js`), which should not be added to .gitignore.
+# Examples with artifacts and dependencies:
+
+## Example 1 (Python project with build artifacts):
+```
+### Added files:
+['__pycache__/main.cpython-39.pyc', 'dist/app.js', 'build/lib/main.class', 'node_modules/lodash/index.js', '.env.local', '.vscode/settings.json', 'temp_file.tmp', 'app.log']
+
+### Deleted files:
+['old_module.py']
+
+### Modified files:
+['src/main.py', 'requirements.txt']
+
+### current .gitignore Content
+'*.log'
+```
+
+Output:
+```
+# Compiled and binary files
+*.pyc
+__pycache__/
+*.class
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Build artifacts
+dist/
+build/
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+.mypy_cache/
+.pytest_cache/
+pip-wheel-metadata/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Editors and IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Original rules preserved
+*.log
+```
+
+## Example 2 (JavaScript/Node project):
+```
+### Added files:
+['node_modules/react/package.json', 'dist/bundle.js', 'build/static/css/main.css', '.npmrc', '.vscode/launch.json', 'package-lock.json', '.env.production']
+
+### Deleted files:
+[]
+
+### Modified files:
+['src/App.js', 'package.json']
+
+### current .gitignore Content
+'node_modules/'
+```
+
+Output:
+```
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+dist/
+build/
+*.min.js
+*.min.css
+
+# Environment
+.env
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Original rules preserved
+node_modules/
+```
+
+## Example 3 (Java/Maven project):
+```
+### Added files:
+['target/classes/Main.class', 'target/test-classes/TestMain.class', '.gradle/caches/modules-2/files-2.1/junit/junit/4.13.2/', 'build/libs/my-app.jar', '.idea/workspace.xml', 'out/production/classes/MyClass.class']
+
+### Deleted files:
+[]
+
+### Modified files:
+['src/main/java/com/example/Main.java', 'pom.xml']
+
+### current .gitignore Content
+'target/'
+```
+
+Output:
+```
+# Compiled files
+*.class
+*.jar
+*.war
+*.ear
+
+# Build artifacts
+target/
+build/
+out/
+
+# Dependencies and caches
+.gradle/
+.gradle-wrapper/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Original rules preserved
+target/
+```
+
+## Example 4 (Go project):
+```
+### Added files:
+['vendor/github.com/some/package/file.go', 'bin/app', 'go.sum', 'go.mod', '.vscode/settings.json', 'coverage.out']
+
+### Deleted files:
+[]
+
+### Modified files:
+['main.go', 'go.mod']
+
+### current .gitignore Content
+''
+```
+
+Output:
+```
+# Binaries
+bin/
+*.exe
+*.out
+*.test
+
+# Dependencies
+vendor/
+
+# Coverage
+coverage.out
+
+# Editors
+.vscode/
+*.swp
+
+# Go-specific
+*.o
+*.a
+```
+
+## Example 5 (Python project with virtual env):
+```
+### Added files:
+['venv/bin/python', 'venv/lib/python3.9/site-packages/requests/__init__.py', '__pycache__/utils.cpython-39.pyc', '.pytest_cache/v/cache/nodeids', 'htmlcov/index.html', 'docs/_build/html/index.html', '.env.test']
+
+### Deleted files:
+[]
+
+### Modified files:
+['src/utils.py', 'tests/test_utils.py']
+
+### current .gitignore Content
+'__pycache__/'
+```
+
+Output:
+```
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.nox/
+.tox/
+
+# Environment
+.env
+*.env.*
+
+# Build docs
+docs/_build/
+
+# Original rules preserved
+__pycache__/
+```
+
+## Example 6 (C++ project):
+```
+### Added files:
+['build/CMakeFiles/CMakeDirectoryInformation.cmake', 'bin/myapp.exe', 'obj/src/main.o', '.vscode/tasks.json', 'core', 'cmake-build-debug/CMakeCache.txt']
+
+### Deleted files:
+[]
+
+### Modified files:
+['src/main.cpp', 'CMakeLists.txt']
+
+### current .gitignore Content
+'build/'
+```
+
+Output:
+```
+# Build artifacts
+build/
+cmake-build-*/
+bin/
+obj/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# Debug and core dumps
+core
+*.stackdump
+
+# Editors
+.vscode/
+*.swp
+
+# Original rules preserved
+build/
+```
+
+## Example 7 (Rust project):
+```
+### Added files:
+['target/debug/deps/my_app-1234567890abcdef.d', 'target/release/my_app', 'Cargo.lock', '.cargo/config.toml', 'target/.rustc_info.json', '.vscode/settings.json']
+
+### Deleted files:
+[]
+
+### Modified files:
+['src/main.rs', 'Cargo.toml']
+
+### current .gitignore Content
+'target/'
+```
+
+Output:
+```
+# Build artifacts
+target/
+
+# Cargo lock file (if not intended to be committed)
+Cargo.lock
+
+# Editors
+.vscode/
+*.swp
+
+# Original rules preserved
+target/
+```
+
+## Example 8 (Just source files - no artifacts):
+```
+### Added files:
+['src/main.py', 'README.md', 'config.json', 'src/utils.py']
+
+### Deleted files:
+['old_file.txt']
+
+### Modified files:
+['requirements.txt', 'src/main.py']
+
+### current .gitignore Content
+''
+```
+
+Output:
+```
+# No output (empty - only source/config files)
+```

@@ -24,15 +24,15 @@ export const app = {
         this.exposeFunctions();
     },
 
-    ensureDefaultData() {
+    async ensureDefaultData() {
         // Ensure categories exist
-        const categories = storage.getCategories();
+        const categories = await storage.getCategories();
         if (categories.length === 0) {
             // Categories will be created by storage module automatically
         }
         
         // Ensure accounts exist
-        const accounts = storage.getAccounts();
+        const accounts = await storage.getAccounts();
         if (accounts.length === 0) {
             // Accounts will be created by storage module automatically
         }
@@ -222,11 +222,7 @@ export const app = {
 
         // Clear all data
         document.getElementById('clear-all-data')?.addEventListener('click', () => {
-            if (confirm('Вы уверены? Все данные будут удалены без возможности восстановления!')) {
-                storage.clearAllData();
-                this.renderAll();
-                alert('Все данные удалены');
-            }
+            app.handleClearAllData();
         });
     },
 
@@ -255,7 +251,7 @@ export const app = {
         ui.renderExpensePieChart();
         
         // Load settings into form
-        const settings = storage.getSettings();
+        const settings = await storage.getSettings();
         const themeSelect = document.getElementById('setting-theme');
         if (themeSelect) {
             themeSelect.value = settings.theme;
@@ -264,7 +260,7 @@ export const app = {
         document.getElementById('setting-language').value = settings.language;
     },
 
-    openTransactionModal(id = null) {
+    async openTransactionModal(id = null) {
         const modal = document.getElementById('transaction-modal');
         const title = document.getElementById('transaction-modal-title');
         const form = document.getElementById('transaction-form');
@@ -275,7 +271,8 @@ export const app = {
         if (id) {
             // Edit mode
             title.textContent = 'Редактировать операцию';
-            const transaction = storage.getTransactions().find(t => t.id === id);
+            const transactions = await storage.getTransactions();
+            const transaction = transactions.find(t => t.id === id);
             if (transaction) {
                 document.getElementById('transaction-id').value = transaction.id;
                 document.querySelector(`input[name="type"][value="${transaction.type}"]`).checked = true;
@@ -359,13 +356,14 @@ export const app = {
         }
     },
 
-    openBudgetModal(id = null) {
+    async openBudgetModal(id = null) {
         const modal = document.getElementById('budget-modal');
         const title = document.getElementById('budget-modal-title');
         
         if (id) {
             title.textContent = 'Редактировать бюджет';
-            const budget = storage.getBudgets().find(b => b.id === id);
+            const budgets = await storage.getBudgets();
+            const budget = budgets.find(b => b.id === id);
             if (budget) {
                 document.getElementById('budget-id').value = budget.id;
                 document.getElementById('budget-category').value = budget.categoryId;
@@ -421,13 +419,14 @@ export const app = {
         }
     },
 
-    openCategoryModal(id = null) {
+    async openCategoryModal(id = null) {
         const modal = document.getElementById('category-modal');
         const title = document.getElementById('category-modal-title');
         
         if (id) {
             title.textContent = 'Редактировать категорию';
-            const category = storage.getCategories().find(c => c.id === id);
+            const categories = await storage.getCategories();
+            const category = categories.find(c => c.id === id);
             if (category) {
                 document.getElementById('category-id').value = category.id;
                 document.getElementById('category-type').value = category.type;
@@ -479,13 +478,14 @@ export const app = {
         }
     },
 
-    openAccountModal(id = null) {
+    async openAccountModal(id = null) {
         const modal = document.getElementById('account-modal');
         const title = document.getElementById('account-modal-title');
         
         if (id) {
             title.textContent = 'Редактировать счет';
-            const account = storage.getAccounts().find(a => a.id === id);
+            const accounts = await storage.getAccounts();
+            const account = accounts.find(a => a.id === id);
             if (account) {
                 document.getElementById('account-id').value = account.id;
                 document.getElementById('account-name').value = account.name;
@@ -547,14 +547,14 @@ export const app = {
         }
     },
 
-    applyFilters() {
+    async applyFilters() {
         const type = document.getElementById('filter-type').value;
         const categoryId = document.getElementById('filter-category').value;
         const accountId = document.getElementById('filter-account').value;
         const dateFrom = document.getElementById('filter-date-from').value;
         const dateTo = document.getElementById('filter-date-to').value;
 
-        let transactions = storage.getTransactions();
+        let transactions = await storage.getTransactions();
 
         if (type !== 'all') {
             transactions = transactions.filter(t => t.type === type);
@@ -588,8 +588,8 @@ export const app = {
         ui.renderTransactionsTable();
     },
 
-    exportReport() {
-        const data = storage.exportData();
+    async exportReport() {
+        const data = await storage.exportData();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -601,11 +601,11 @@ export const app = {
         URL.revokeObjectURL(url);
     },
 
-    exportData() {
+    async exportData() {
         this.exportReport();
     },
 
-    importData(file) {
+    async importData(file) {
         if (!file) return;
 
         // Проверка типа файла
@@ -631,8 +631,8 @@ export const app = {
                     throw new Error('Неверная структура файла');
                 }
                 
-                storage.importData(data);
-                this.renderAll();
+                await storage.importData(data);
+                await this.renderAll();
                 alert('Данные успешно импортированы!');
             } catch (error) {
                 console.error('Import error:', error);
@@ -643,5 +643,13 @@ export const app = {
             alert('Ошибка чтения файла');
         };
         reader.readAsText(file);
+    },
+
+    async handleClearAllData() {
+        if (confirm('Вы уверены? Все данные будут удалены без возможности восстановления!')) {
+            await storage.clearAllData();
+            await this.renderAll();
+            alert('Все данные удалены');
+        }
     }
 };
