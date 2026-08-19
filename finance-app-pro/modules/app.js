@@ -6,7 +6,7 @@ import { storage } from './storage.js';
 import { ui } from './ui.js';
 
 export const app = {
-    init() {
+    async init() {
         // Initialize data if needed first
         this.ensureDefaultData();
         
@@ -15,14 +15,19 @@ export const app = {
         this.setupEventListeners();
         
         // Expose functions to window for inline onclick handlers
-        // Must be done before renderAll which creates elements with onclick handlers
+        // Must be done BEFORE renderAll which creates elements with onclick handlers
         this.exposeFunctions();
         
-        // Initialize theme (this calls switchTab which needs event listeners)
+        // Initialize theme (this sets the theme attribute but doesn't switch tabs yet)
         ui.initTheme();
         
-        // Initial render
+        // Restore active tab AFTER event listeners are set up
+        await ui.restoreActiveTab();
+        
+        // Initial render - this creates DOM elements that use window.editX functions
         this.renderAll();
+        
+        console.log('App initialized successfully');
     },
 
     async ensureDefaultData() {
