@@ -5,7 +5,7 @@
 import { app } from '../modules/app.js';
 
 // Initialize application when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('FinancePRO v3.0.0 initializing...');
     
     // Check for required browser features
@@ -17,6 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Chart.js не загружен. Проверьте подключение к интернету.');
     }
     
-    app.init();
+    await app.init();
     console.log('FinancePRO initialized successfully!');
 });

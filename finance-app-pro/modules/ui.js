@@ -6,13 +6,21 @@ import { storage } from './storage.js';
 
 let charts = {};
 
+const defaultSettings = {
+    theme: 'light',
+    currency: 'RUB',
+    language: 'ru'
+};
+
 export const ui = {
     initTheme() {
         // First check localStorage for saved theme, then settings
         let savedTheme = localStorage.getItem('financepro_theme');
         
         if (!savedTheme) {
-            const settings = storage.getSettings();
+            // Use synchronous localStorage access for settings to avoid async issues during init
+            const settingsData = localStorage.getItem('financepro_settings');
+            const settings = settingsData ? JSON.parse(settingsData) : defaultSettings;
             savedTheme = settings.theme;
         }
         
@@ -25,11 +33,14 @@ export const ui = {
         document.documentElement.setAttribute('data-theme', theme);
         this.updateThemeIcon(theme);
         
-        // Restore active tab from localStorage
+        // DO NOT switch tab here - it will be done in app.init() after event listeners are set up
+        // Just save the tab that should be active, actual switching happens later
+    },
+    
+    async restoreActiveTab() {
+        // Restore active tab from localStorage - called AFTER event listeners are set up
         const savedTab = localStorage.getItem('financepro_activeTab');
         if (savedTab) {
-            // Switch to saved tab WITHOUT calling event listeners
-            // Event listeners are already set up in app.init()
             this.switchTab(savedTab);
         } else {
             // Default to dashboard if no saved tab
