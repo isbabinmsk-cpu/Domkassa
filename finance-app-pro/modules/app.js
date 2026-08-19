@@ -18,14 +18,15 @@ export const app = {
         // Must be done BEFORE renderAll which creates elements with onclick handlers
         this.exposeFunctions();
         
-        // Initialize theme (this sets the theme attribute but doesn't switch tabs yet)
+        // Initialize theme (this sets the theme attribute but doesn't switch tabs)
         ui.initTheme();
         
-        // Restore active tab AFTER event listeners are set up
-        await ui.restoreActiveTab();
-        
         // Initial render - this creates DOM elements that use window.editX functions
-        this.renderAll();
+        await this.renderAll();
+        
+        // Restore active tab AFTER rendering is complete
+        // This ensures all tab content exists and event listeners are ready
+        await ui.restoreActiveTab();
         
         console.log('App initialized successfully');
     },
@@ -253,8 +254,8 @@ export const app = {
         await ui.renderCategoriesList();
         await ui.renderAccountsGrid();
         await ui.renderBudgets();
-        ui.renderMainChart();
-        ui.renderExpensePieChart();
+        await ui.renderMainChart();
+        await ui.renderExpensePieChart();
         
         // Load settings into form
         const settings = await storage.getSettings();

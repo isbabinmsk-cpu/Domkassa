@@ -1,1 +1,3 @@
-Nothing should be ignored since the changes only include JavaScript source files (.js) which are legitimate project files and not build artifacts, dependencies, or temporary files.
+```javascript
+
+```

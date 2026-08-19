@@ -38,14 +38,12 @@ export const ui = {
     },
     
     async restoreActiveTab() {
-        // Restore active tab from localStorage - called AFTER event listeners are set up
+        // Restore active tab from localStorage - called AFTER rendering and event listeners are set up
         const savedTab = localStorage.getItem('financepro_activeTab');
         if (savedTab) {
             this.switchTab(savedTab);
-        } else {
-            // Default to dashboard if no saved tab
-            this.switchTab('dashboard');
         }
+        // If no saved tab, stay on the default (dashboard has 'active' class in HTML)
     },
 
     async setTheme(theme) {
@@ -407,11 +405,11 @@ export const ui = {
         }).join('');
     },
 
-    renderMainChart() {
+    async renderMainChart() {
         const ctx = document.getElementById('main-chart');
         if (!ctx) return;
 
-        const transactions = storage.getTransactions();
+        const transactions = await storage.getTransactions();
         const last7Days = [];
         
         for (let i = 6; i >= 0; i--) {
@@ -477,12 +475,12 @@ export const ui = {
         });
     },
 
-    renderExpensePieChart() {
+    async renderExpensePieChart() {
         const ctx = document.getElementById('expense-pie-chart');
         if (!ctx) return;
 
-        const transactions = storage.getTransactions();
-        const categories = storage.getCategories();
+        const transactions = await storage.getTransactions();
+        const categories = await storage.getCategories();
         
         const expensesByCategory = {};
         
