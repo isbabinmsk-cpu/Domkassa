@@ -19,7 +19,11 @@ app.use(express.static(path.join(__dirname, '../')));
 
 // Initialize database
 initDatabase()
-  .then(() => console.log('✅ Server ready'))
+  .then(() => {
+    console.log('✅ Server ready');
+    console.log('📊 Using SQLite database (no installation required)');
+    console.log('📁 Database file can be committed to GitHub');
+  })
   .catch(err => {
     console.error('❌ Failed to initialize database:', err);
     process.exit(1);
@@ -226,5 +230,6 @@ app.get('*', (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 FinancePRO server running on http://localhost:${PORT}`);
-  console.log(`📊 Using PostgreSQL database`);
+  console.log(`📊 Using SQLite database (no installation required)`);
+  console.log(`📁 Database file can be committed to GitHub`);
 });
