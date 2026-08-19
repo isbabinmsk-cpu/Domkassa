@@ -1,0 +1,17 @@
+{
+  "name": "family-finance-app",
+  "version": "1.0.0",
+  "description": "Домашние финансы с SQLite в браузере",
+  "scripts": {
+    "build": "parcel build src/index.html --dist-dir dist --public-url ./",
+    "dev": "parcel src/index.html --dist-dir dist"
+  },
+  "dependencies": {
+    "sql.js": "^1.14.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "parcel": "^2.16.4"
+  }
+}
