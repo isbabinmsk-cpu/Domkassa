@@ -7,14 +7,15 @@ import { ui } from './ui.js';
 
 export const app = {
     init() {
-        // Initialize theme first
-        ui.initTheme();
-        
-        // Initialize data if needed
+        // Initialize data if needed first
         this.ensureDefaultData();
         
-        // Setup event listeners
+        // Setup event listeners BEFORE initializing theme
+        // This ensures nav buttons have handlers before switchTab is called
         this.setupEventListeners();
+        
+        // Initialize theme (this calls switchTab which needs event listeners)
+        ui.initTheme();
         
         // Initial render
         this.renderAll();
