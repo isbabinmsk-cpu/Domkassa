@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Мои Финансы - iOS Style</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="app-icon">💰</div>
+                <h1>Мои Финансы</h1>
+                <p>Учёт домашних финансов</p>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="ios-input-group">
+                    <div class="ios-input-field">
+                        <ion-icon name="person-outline"></ion-icon>
+                        <input type="text" id="login-username" placeholder="Логин" required autocomplete="username">
+                    </div>
+                    <div class="ios-input-field">
+                        <ion-icon name="lock-closed-outline"></ion-icon>
+                        <input type="password" id="login-password" placeholder="Пароль" required autocomplete="current-password">
+                    </div>
+                </div>
+                <button type="submit" class="ios-button primary full-width">
+                    <span>Войти</span>
+                    <ion-icon name="chevron-forward"></ion-icon>
+                </button>
+                <p class="login-hint">По умолчанию: admin / admin123</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="app-screen" class="screen">
+        <!-- Top Navigation Bar -->
+        <header class="ios-navbar">
+            <div class="navbar-left">
+                <span class="navbar-title" id="current-page-title">Главная</span>
+            </div>
+            <div class="navbar-right">
+                <button class="icon-button" id="logout-btn" aria-label="Выйти">
+                    <ion-icon name="log-out-outline"></ion-icon>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="main-content">
+            <!-- Dashboard Tab -->
+            <section id="tab-dashboard" class="tab-content active">
+                <div class="content-container">
+                    <!-- Balance Card -->
+                    <div class="balance-card">
+                        <div class="balance-label">Общий баланс</div>
+                        <div class="balance-amount" id="total-balance">0 ₽</div>
+                        <div class="balance-period">на текущий момент</div>
+                    </div>
+
+                    <!-- Monthly Summary -->
+                    <div class="summary-row">
+                        <div class="summary-card income">
+                            <div class="summary-icon">
+                                <ion-icon name="arrow-down"></ion-icon>
+                            </div>
+                            <div class="summary-info">
+                                <div class="summary-label">Доходы</div>
+                                <div class="summary-amount" id="monthly-income">0 ₽</div>
+                            </div>
+                        </div>
+                        <div class="summary-card expense">
+                            <div class="summary-icon">
+                                <ion-icon name="arrow-up"></ion-icon>
+                            </div>
+                            <div class="summary-info">
+                                <div class="summary-label">Расходы</div>
+                                <div class="summary-amount" id="monthly-expense">0 ₽</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <div class="section-container">
+                        <div class="section-header">
+                            <h2>Последние операции</h2>
+                            <button class="text-button" data-action="view-all-transactions">Все</button>
+                        </div>
+                        <div class="transactions-list" id="recent-transactions"></div>
+                    </div>
+
+                    <!-- Category Breakdown -->
+                    <div class="section-container">
+                        <div class="section-header">
+                            <h2>Категории расходов</h2>
+                        </div>
+                        <div class="categories-breakdown" id="categories-breakdown"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transactions Tab -->
+            <section id="tab-transactions" class="tab-content">
+                <div class="content-container">
+                    <div class="search-bar">
+                        <ion-icon name="search"></ion-icon>
+                        <input type="text" id="transaction-search" placeholder="Поиск операций">
+                    </div>
+                    
+                    <div class="filter-chips">
+                        <button class="filter-chip active" data-filter="all">Все</button>
+                        <button class="filter-chip" data-filter="income">Доходы</button>
+                        <button class="filter-chip" data-filter="expense">Расходы</button>
+                    </div>
+
+                    <div class="transactions-list full" id="all-transactions"></div>
+                </div>
+            </section>
+
+            <!-- Categories Tab -->
+            <section id="tab-categories" class="tab-content">
+                <div class="content-container">
+                    <div class="section-container">
+                        <div class="section-header">
+                            <h2>Категории доходов</h2>
+                        </div>
+                        <div class="categories-grid" id="income-categories"></div>
+                    </div>
+
+                    <div class="section-container">
+                        <div class="section-header">
+                            <h2>Категории расходов</h2>
+                        </div>
+                        <div class="categories-grid" id="expense-categories"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Accounts Tab -->
+            <section id="tab-accounts" class="tab-content">
+                <div class="content-container">
+                    <div class="accounts-list" id="accounts-list"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Tab Bar with FAB -->
+        <nav class="ios-tabbar">
+            <div class="tabbar-wrapper">
+                <button class="tab-button active" data-tab="dashboard">
+                    <ion-icon name="home"></ion-icon>
+                    <span>Главная</span>
+                </button>
+                <button class="tab-button" data-tab="transactions">
+                    <ion-icon name="swap-horizontal"></ion-icon>
+                    <span>Операции</span>
+                </button>
+                
+                <!-- FAB Button -->
+                <div class="fab-container">
+                    <button class="fab-button" id="add-transaction-fab">
+                        <ion-icon name="add"></ion-icon>
+                    </button>
+                </div>
+                
+                <button class="tab-button" data-tab="categories">
+                    <ion-icon name="pricetag"></ion-icon>
+                    <span>Категории</span>
+                </button>
+                <button class="tab-button" data-tab="accounts">
+                    <ion-icon name="wallet"></ion-icon>
+                    <span>Счета</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div id="transaction-modal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content bottom-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <h3 id="transaction-modal-title">Новая операция</h3>
+                <button class="modal-close" id="close-transaction-modal">
+                    <ion-icon name="close"></ion-icon>
+                </button>
+            </div>
+            <form id="transaction-form">
+                <input type="hidden" id="transaction-id">
+                
+                <!-- Amount Input -->
+                <div class="amount-input-container">
+                    <div class="currency-symbol">₽</div>
+                    <input type="number" id="transaction-amount" placeholder="0" step="0.01" min="0" required>
+                </div>
+
+                <!-- Type Toggle -->
+                <div class="type-toggle">
+                    <button type="button" class="type-option active" data-type="expense">
+                        <ion-icon name="arrow-up"></ion-icon>
+                        <span>Расход</span>
+                    </button>
+                    <button type="button" class="type-option" data-type="income">
+                        <ion-icon name="arrow-down"></ion-icon>
+                        <span>Доход</span>
+                    </button>
+                </div>
+
+                <!-- Category Selection -->
+                <div class="form-section">
+                    <label>Категория</label>
+                    <div class="category-selector" id="category-selector">
+                        <button type="button" class="category-select-btn" id="select-category-btn">
+                            <ion-icon name="pricetag-outline"></ion-icon>
+                            <span>Выбрать категорию</span>
+                        </button>
+                    </div>
+                    <div class="selected-category-display" id="selected-category-display" style="display: none;">
+                        <div class="category-badge">
+                            <ion-icon id="selected-category-icon"></ion-icon>
+                            <span id="selected-category-name"></span>
+                        </div>
+                        <button type="button" class="change-category-btn" id="change-category-btn">Изменить</button>
+                    </div>
+                </div>
+
+                <!-- Subcategory Selection (hidden by default) -->
+                <div class="form-section" id="subcategory-section" style="display: none;">
+                    <label>Подкатегория</label>
+                    <div class="subcategory-scroll" id="subcategory-scroll"></div>
+                </div>
+
+                <!-- Account Selection -->
+                <div class="form-section">
+                    <label>Счет</label>
+                    <select id="transaction-account" class="ios-select" required></select>
+                </div>
+
+                <!-- Date Selection -->
+                <div class="form-section">
+                    <label>Дата</label>
+                    <input type="date" id="transaction-date" class="ios-input" required>
+                </div>
+
+                <!-- Description -->
+                <div class="form-section">
+                    <label>Описание (необязательно)</label>
+                    <input type="text" id="transaction-description" class="ios-input" placeholder="Комментарий">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="ios-button primary full-width">
+                    <span>Сохранить</span>
+                    <ion-icon name="checkmark"></ion-icon>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Selection Modal -->
+    <div id="category-modal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content center-modal">
+            <div class="modal-header">
+                <h3>Выберите категорию</h3>
+                <button class="modal-close" id="close-category-modal">
+                    <ion-icon name="close"></ion-icon>
+                </button>
+            </div>
+            <div class="category-list-container" id="category-list-container"></div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
