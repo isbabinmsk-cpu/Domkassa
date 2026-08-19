@@ -113,7 +113,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const transactions = this.getTransactions();
+        const transactions = await this.getTransactions();
         transaction.id = 'txn_' + Date.now();
         transaction.createdAt = new Date().toISOString();
         transactions.push(transaction);
@@ -138,7 +138,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const transactions = this.getTransactions();
+        const transactions = await this.getTransactions();
         const index = transactions.findIndex(t => t.id === id);
         if (index !== -1) {
             transactions[index] = { ...transactions[index], ...updates, updatedAt: new Date().toISOString() };
@@ -160,7 +160,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const transactions = this.getTransactions();
+        const transactions = await this.getTransactions();
         const filtered = transactions.filter(t => t.id !== id);
         this.saveTransactions(filtered);
     },
@@ -213,7 +213,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const categories = this.getCategories();
+        const categories = await this.getCategories();
         category.id = 'cat_' + Date.now();
         categories.push(category);
         this.saveCategories(categories);
@@ -237,7 +237,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const categories = this.getCategories();
+        const categories = await this.getCategories();
         const index = categories.findIndex(c => c.id === id);
         if (index !== -1) {
             categories[index] = { ...categories[index], ...updates };
@@ -259,7 +259,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const categories = this.getCategories();
+        const categories = await this.getCategories();
         const filtered = categories.filter(c => c.id !== id);
         this.saveCategories(filtered);
     },
@@ -338,7 +338,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const accounts = this.getAccounts();
+        const accounts = await this.getAccounts();
         const index = accounts.findIndex(a => a.id === id);
         if (index !== -1) {
             accounts[index] = { ...accounts[index], ...updates };
@@ -360,7 +360,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const accounts = this.getAccounts();
+        const accounts = await this.getAccounts();
         const filtered = accounts.filter(a => a.id !== id);
         this.saveAccounts(filtered);
     },
@@ -409,7 +409,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const budgets = this.getBudgets();
+        const budgets = await this.getBudgets();
         budget.id = 'bud_' + Date.now();
         budget.createdAt = new Date().toISOString();
         budgets.push(budget);
@@ -434,7 +434,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const budgets = this.getBudgets();
+        const budgets = await this.getBudgets();
         const index = budgets.findIndex(b => b.id === id);
         if (index !== -1) {
             budgets[index] = { ...budgets[index], ...updates };
@@ -456,7 +456,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const budgets = this.getBudgets();
+        const budgets = await this.getBudgets();
         const filtered = budgets.filter(b => b.id !== id);
         this.saveBudgets(filtered);
     },
@@ -517,7 +517,7 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const settings = this.getSettings();
+        const settings = await this.getSettings();
         const newSettings = { ...settings, ...updates };
         this.saveSettings(newSettings);
         return newSettings;

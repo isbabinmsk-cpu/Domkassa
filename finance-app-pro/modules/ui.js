@@ -108,8 +108,8 @@ export const ui = {
         }).format(date);
     },
 
-    renderSummaryCards() {
-        const transactions = storage.getTransactions();
+    async renderSummaryCards() {
+        const transactions = await storage.getTransactions();
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
@@ -129,12 +129,12 @@ export const ui = {
             }
         });
 
-        const accounts = storage.getAccounts();
+        const accounts = await storage.getAccounts();
         accounts.forEach(acc => {
             totalBalance += parseFloat(acc.balance || 0);
         });
 
-        const budgets = storage.getBudgets();
+        const budgets = await storage.getBudgets();
         const totalSavings = budgets.reduce((sum, b) => sum + (parseFloat(b.limit) || 0), 0);
 
         document.getElementById('total-income').textContent = this.formatCurrency(totalIncome);
@@ -143,8 +143,8 @@ export const ui = {
         document.getElementById('total-savings').textContent = this.formatCurrency(totalSavings);
     },
 
-    renderRecentTransactions(limit = 5) {
-        const transactions = storage.getTransactions();
+    async renderRecentTransactions(limit = 5) {
+        const transactions = await storage.getTransactions();
         const sorted = transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
         const recent = sorted.slice(0, limit);
         
@@ -156,8 +156,8 @@ export const ui = {
             return;
         }
 
-        const categories = storage.getCategories();
-        const accounts = storage.getAccounts();
+        const categories = await storage.getCategories();
+        const accounts = await storage.getAccounts();
 
         container.innerHTML = recent.map(t => {
             const category = categories.find(c => c.id === t.categoryId) || { name: 'Без категории', icon: 'help-circle-outline' };
@@ -180,8 +180,8 @@ export const ui = {
         }).join('');
     },
 
-    renderTransactionsTable(transactions = null) {
-        const txnList = transactions || storage.getTransactions();
+    async renderTransactionsTable(transactions = null) {
+        const txnList = transactions || await storage.getTransactions();
         const tbody = document.getElementById('transactions-table-body');
         if (!tbody) return;
 
@@ -190,8 +190,8 @@ export const ui = {
             return;
         }
 
-        const categories = storage.getCategories();
-        const accounts = storage.getAccounts();
+        const categories = await storage.getCategories();
+        const accounts = await storage.getAccounts();
 
         tbody.innerHTML = txnList.map(t => {
             const category = categories.find(c => c.id === t.categoryId) || { name: 'Без категории', icon: 'help-circle-outline' };
@@ -215,8 +215,8 @@ export const ui = {
         }).join('');
     },
 
-    renderCategorySelects() {
-        const categories = storage.getCategories();
+    async renderCategorySelects() {
+        const categories = await storage.getCategories();
         const incomeCategories = categories.filter(c => c.type === 'income');
         const expenseCategories = categories.filter(c => c.type === 'expense');
 
@@ -244,11 +244,11 @@ export const ui = {
         }
 
         // Render categories lists
-        this.renderCategoriesList();
+        await this.renderCategoriesList();
     },
 
-    renderAccountSelects() {
-        const accounts = storage.getAccounts();
+    async renderAccountSelects() {
+        const accounts = await storage.getAccounts();
 
         // Transaction form select
         const txnSelect = document.getElementById('transaction-account');
@@ -269,8 +269,8 @@ export const ui = {
         this.renderAccountsGrid();
     },
 
-    renderCategoriesList() {
-        const categories = storage.getCategories();
+    async renderCategoriesList() {
+        const categories = await storage.getCategories();
         const incomeCats = categories.filter(c => c.type === 'income');
         const expenseCats = categories.filter(c => c.type === 'expense');
 
@@ -302,8 +302,8 @@ export const ui = {
         `;
     },
 
-    renderAccountsGrid() {
-        const accounts = storage.getAccounts();
+    async renderAccountsGrid() {
+        const accounts = await storage.getAccounts();
         const container = document.getElementById('accounts-container');
         
         if (!container) return;
@@ -333,11 +333,11 @@ export const ui = {
         `).join('');
     },
 
-    renderBudgets() {
-        const budgets = storage.getBudgets();
+    async renderBudgets() {
+        const budgets = await storage.getBudgets();
         const container = document.getElementById('budgets-container');
-        const categories = storage.getCategories();
-        const transactions = storage.getTransactions();
+        const categories = await storage.getCategories();
+        const transactions = await storage.getTransactions();
         
         if (!container) return;
 
@@ -519,13 +519,13 @@ export const ui = {
         });
     },
 
-    renderAnalyticsCharts(period = 'month') {
+    async renderAnalyticsCharts(period = 'month') {
         // Line chart - monthly dynamics
         const lineCtx = document.getElementById('analytics-line-chart');
         if (lineCtx) {
             if (charts.analyticsLine) charts.analyticsLine.destroy();
             
-            const monthlyData = this.getMonthlyData(period);
+            const monthlyData = await this.getMonthlyData(period);
             
             charts.analyticsLine = new Chart(lineCtx, {
                 type: 'line',
@@ -558,7 +558,7 @@ export const ui = {
         if (barCtx) {
             if (charts.analyticsBar) charts.analyticsBar.destroy();
             
-            const totals = this.getTotalsByPeriod(period);
+            const totals = await this.getTotalsByPeriod(period);
             
             charts.analyticsBar = new Chart(barCtx, {
                 type: 'bar',
@@ -581,7 +581,7 @@ export const ui = {
         if (topCtx) {
             if (charts.topCategories) charts.topCategories.destroy();
             
-            const topCategories = this.getTopCategories(period);
+            const topCategories = await this.getTopCategories(period);
             
             charts.topCategories = new Chart(topCtx, {
                 type: 'bar',
@@ -601,11 +601,11 @@ export const ui = {
         }
 
         // Stats
-        this.renderAnalyticsStats(period);
+        await this.renderAnalyticsStats(period);
     },
 
-    getMonthlyData(period) {
-        const transactions = storage.getTransactions();
+    async getMonthlyData(period) {
+        const transactions = await storage.getTransactions();
         const months = [];
         const count = period === 'week' ? 1 : period === 'quarter' ? 3 : period === 'year' ? 12 : 1;
         
@@ -633,8 +633,8 @@ export const ui = {
         return { labels: months, income, expense };
     },
 
-    getTotalsByPeriod(period) {
-        const transactions = storage.getTransactions();
+    async getTotalsByPeriod(period) {
+        const transactions = await storage.getTransactions();
         const now = new Date();
         let startDate = new Date();
         
@@ -657,9 +657,9 @@ export const ui = {
         return { income, expense };
     },
 
-    getTopCategories(period, limit = 5) {
-        const transactions = storage.getTransactions();
-        const categories = storage.getCategories();
+    async getTopCategories(period, limit = 5) {
+        const transactions = await storage.getTransactions();
+        const categories = await storage.getCategories();
         const now = new Date();
         let startDate = new Date();
         
@@ -697,11 +697,11 @@ export const ui = {
         };
     },
 
-    renderAnalyticsStats(period) {
+    async renderAnalyticsStats(period) {
         const container = document.getElementById('analytics-stats');
         if (!container) return;
 
-        const totals = this.getTotalsByPeriod(period);
+        const totals = await this.getTotalsByPeriod(period);
         const avgDaily = totals.expense / (period === 'week' ? 7 : period === 'month' ? 30 : period === 'quarter' ? 90 : 365);
         const savingsRate = totals.income > 0 ? ((totals.income - totals.expense) / totals.income * 100) : 0;
 

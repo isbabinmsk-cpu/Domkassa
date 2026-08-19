@@ -241,15 +241,15 @@ export const app = {
         window.deleteAccount = (id) => this.deleteAccount(id);
     },
 
-    renderAll() {
-        ui.renderSummaryCards();
-        ui.renderRecentTransactions();
-        ui.renderTransactionsTable();
-        ui.renderCategorySelects();
-        ui.renderAccountSelects();
-        ui.renderCategoriesList();
-        ui.renderAccountsGrid();
-        ui.renderBudgets();
+    async renderAll() {
+        await ui.renderSummaryCards();
+        await ui.renderRecentTransactions();
+        await ui.renderTransactionsTable();
+        await ui.renderCategorySelects();
+        await ui.renderAccountSelects();
+        await ui.renderCategoriesList();
+        await ui.renderAccountsGrid();
+        await ui.renderBudgets();
         ui.renderMainChart();
         ui.renderExpensePieChart();
         
@@ -343,12 +343,12 @@ export const app = {
         if (id) {
             storage.updateTransaction(id, transactionData);
         } else {
-            storage.addTransaction(transactionData);
+            await storage.addTransaction(transactionData);
         }
 
         ui.closeModal('transaction-modal');
         ui.resetForm('transaction-form');
-        this.renderAll();
+        await this.renderAll();
     },
 
     deleteTransaction(id) {
