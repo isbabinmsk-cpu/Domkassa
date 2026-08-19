@@ -296,7 +296,7 @@ export const app = {
         ui.openModal('transaction-modal');
     },
 
-    handleTransactionSubmit() {
+    async handleTransactionSubmit() {
         const id = document.getElementById('transaction-id').value;
         const type = document.querySelector('input[name="type"]:checked').value;
         const amountInput = document.getElementById('transaction-amount');
@@ -341,7 +341,7 @@ export const app = {
         };
 
         if (id) {
-            storage.updateTransaction(id, transactionData);
+            await storage.updateTransaction(id, transactionData);
         } else {
             await storage.addTransaction(transactionData);
         }
@@ -351,10 +351,10 @@ export const app = {
         await this.renderAll();
     },
 
-    deleteTransaction(id) {
+    async deleteTransaction(id) {
         if (confirm('Удалить эту операцию?')) {
-            storage.deleteTransaction(id);
-            this.renderAll();
+            await storage.deleteTransaction(id);
+            await this.renderAll();
         }
     },
 
@@ -380,7 +380,7 @@ export const app = {
         ui.openModal('budget-modal');
     },
 
-    handleBudgetSubmit() {
+    async handleBudgetSubmit() {
         const id = document.getElementById('budget-id').value;
         const categoryId = document.getElementById('budget-category').value;
         const limitInput = document.getElementById('budget-limit');
@@ -403,20 +403,20 @@ export const app = {
         const budgetData = { categoryId, limit, color };
 
         if (id) {
-            storage.updateBudget(id, budgetData);
+            await storage.updateBudget(id, budgetData);
         } else {
-            storage.addBudget(budgetData);
+            await storage.addBudget(budgetData);
         }
 
         ui.closeModal('budget-modal');
         ui.resetForm('budget-form');
-        ui.renderBudgets();
+        await this.renderAll();
     },
 
-    deleteBudget(id) {
+    async deleteBudget(id) {
         if (confirm('Удалить этот бюджет?')) {
-            storage.deleteBudget(id);
-            ui.renderBudgets();
+            await storage.deleteBudget(id);
+            await this.renderAll();
         }
     },
 
@@ -443,7 +443,7 @@ export const app = {
         ui.openModal('category-modal');
     },
 
-    handleCategorySubmit() {
+    async handleCategorySubmit() {
         const id = document.getElementById('category-id').value;
         const type = document.getElementById('category-type').value;
         const nameInput = document.getElementById('category-name');
@@ -461,20 +461,20 @@ export const app = {
         const categoryData = { type, name, icon, color };
 
         if (id) {
-            storage.updateCategory(id, categoryData);
+            await storage.updateCategory(id, categoryData);
         } else {
-            storage.addCategory(categoryData);
+            await storage.addCategory(categoryData);
         }
 
         ui.closeModal('category-modal');
         ui.resetForm('category-form');
-        ui.renderCategorySelects();
+        await this.renderAll();
     },
 
-    deleteCategory(id) {
+    async deleteCategory(id) {
         if (confirm('Удалить эту категорию? Это может повлиять на существующие операции.')) {
-            storage.deleteCategory(id);
-            ui.renderCategorySelects();
+            await storage.deleteCategory(id);
+            await this.renderAll();
         }
     },
 
@@ -502,7 +502,7 @@ export const app = {
         ui.openModal('account-modal');
     },
 
-    handleAccountSubmit() {
+    async handleAccountSubmit() {
         const id = document.getElementById('account-id').value;
         const nameInput = document.getElementById('account-name');
         const name = nameInput.value.trim();
@@ -529,22 +529,20 @@ export const app = {
         const accountData = { name, type, balance, currency, color };
 
         if (id) {
-            storage.updateAccount(id, accountData);
+            await storage.updateAccount(id, accountData);
         } else {
-            storage.addAccount(accountData);
+            await storage.addAccount(accountData);
         }
 
         ui.closeModal('account-modal');
         ui.resetForm('account-form');
-        ui.renderAccountSelects();
-        ui.renderSummaryCards();
+        await this.renderAll();
     },
 
-    deleteAccount(id) {
+    async deleteAccount(id) {
         if (confirm('Удалить этот счет?')) {
-            storage.deleteAccount(id);
-            ui.renderAccountSelects();
-            ui.renderSummaryCards();
+            await storage.deleteAccount(id);
+            await this.renderAll();
         }
     },
 
