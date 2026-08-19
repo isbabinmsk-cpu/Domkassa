@@ -10,18 +10,19 @@ export const app = {
         // Initialize data if needed first
         this.ensureDefaultData();
         
-        // Setup event listeners BEFORE initializing theme
-        // This ensures nav buttons have handlers before switchTab is called
+        // Setup event listeners FIRST
+        // This ensures nav buttons have handlers before any tab switching occurs
         this.setupEventListeners();
+        
+        // Expose functions to window for inline onclick handlers
+        // Must be done before renderAll which creates elements with onclick handlers
+        this.exposeFunctions();
         
         // Initialize theme (this calls switchTab which needs event listeners)
         ui.initTheme();
         
         // Initial render
         this.renderAll();
-        
-        // Expose functions to window for inline onclick handlers
-        this.exposeFunctions();
     },
 
     async ensureDefaultData() {

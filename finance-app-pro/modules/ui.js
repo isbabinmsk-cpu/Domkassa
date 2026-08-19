@@ -28,7 +28,8 @@ export const ui = {
         // Restore active tab from localStorage
         const savedTab = localStorage.getItem('financepro_activeTab');
         if (savedTab) {
-            // Switch to saved tab (this also sets the nav button active state)
+            // Switch to saved tab WITHOUT calling event listeners
+            // Event listeners are already set up in app.init()
             this.switchTab(savedTab);
         } else {
             // Default to dashboard if no saved tab
@@ -36,7 +37,7 @@ export const ui = {
         }
     },
 
-    setTheme(theme) {
+    async setTheme(theme) {
         if (theme === 'auto') {
             theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
@@ -44,7 +45,7 @@ export const ui = {
         document.documentElement.setAttribute('data-theme', theme);
         // Save to both settings and localStorage for persistence
         localStorage.setItem('financepro_theme', theme);
-        storage.updateSettings({ theme: theme === 'auto' ? 'auto' : theme });
+        await storage.updateSettings({ theme: theme === 'auto' ? 'auto' : theme });
         this.updateThemeIcon(theme);
     },
 
