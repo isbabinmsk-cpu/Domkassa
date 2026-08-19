@@ -415,12 +415,25 @@ body {
 /* Transactions Table */
 .transactions-table-container {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin-bottom: 1rem;
+    position: relative;
 }
 
 .transactions-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px;
+    min-width: 650px;
+    display: block;
+}
+
+.transactions-table thead,
+.transactions-table tbody,
+.transactions-table tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 .transactions-table th,
@@ -429,10 +442,26 @@ body {
     text-align: left;
     border-bottom: 1px solid var(--border-color);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+/* Column widths */
+.transactions-table th:nth-child(1),
+.transactions-table td:nth-child(1) { width: 12%; }
+.transactions-table th:nth-child(2),
+.transactions-table td:nth-child(2) { width: 28%; }
+.transactions-table th:nth-child(3),
+.transactions-table td:nth-child(3) { width: 18%; }
+.transactions-table th:nth-child(4),
+.transactions-table td:nth-child(4) { width: 18%; }
+.transactions-table th:nth-child(5),
+.transactions-table td:nth-child(5) { width: 14%; }
+.transactions-table th:nth-child(6),
+.transactions-table td:nth-child(6) { width: 10%; }
+
 .transactions-table th {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -999,8 +1028,35 @@ form {
     
     .transactions-table th,
     .transactions-table td {
-        padding: 0.5rem 0.25rem;
-        font-size: 0.85rem;
+        padding: 0.4rem 0.2rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+    
+    .transactions-table thead,
+    .transactions-table tbody,
+    .transactions-table tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+    
+    /* Adjust column widths for mobile */
+    .transactions-table th:nth-child(1),
+    .transactions-table td:nth-child(1) { width: 14%; }
+    .transactions-table th:nth-child(2),
+    .transactions-table td:nth-child(2) { width: 30%; }
+    .transactions-table th:nth-child(3),
+    .transactions-table td:nth-child(3) { width: 18%; }
+    .transactions-table th:nth-child(4),
+    .transactions-table td:nth-child(4) { width: 16%; }
+    .transactions-table th:nth-child(5),
+    .transactions-table td:nth-child(5) { width: 12%; }
+    .transactions-table th:nth-child(6),
+    .transactions-table td:nth-child(6) { width: 10%; }
+    
+    .transactions-table-container {
+        -webkit-overflow-scrolling: touch;
     }
 }
 
