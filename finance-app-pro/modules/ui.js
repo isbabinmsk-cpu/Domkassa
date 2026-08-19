@@ -30,9 +30,9 @@ export const ui = {
     },
 
     updateThemeIcon(theme) {
-        const icon = document.querySelector('#theme-toggle .icon');
+        const icon = document.querySelector('#theme-toggle ion-icon');
         if (icon) {
-            icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            icon.setAttribute('name', theme === 'dark' ? 'sunny-outline' : 'moon-outline');
         }
     },
 
@@ -133,13 +133,13 @@ export const ui = {
         const accounts = storage.getAccounts();
 
         container.innerHTML = recent.map(t => {
-            const category = categories.find(c => c.id === t.categoryId) || { name: 'Без категории', icon: '❓' };
+            const category = categories.find(c => c.id === t.categoryId) || { name: 'Без категории', icon: 'help-circle-outline' };
             const account = accounts.find(a => a.id === t.accountId) || { name: 'Неизвестно' };
             
             return `
                 <div class="transaction-item">
                     <div class="transaction-info">
-                        <div class="transaction-icon">${category.icon}</div>
+                        <div class="transaction-icon"><ion-icon name="${category.icon}"></ion-icon></div>
                         <div class="transaction-details">
                             <h4>${t.description || category.name}</h4>
                             <p>${this.formatDate(t.date)} • ${account.name}</p>
@@ -167,20 +167,20 @@ export const ui = {
         const accounts = storage.getAccounts();
 
         tbody.innerHTML = txnList.map(t => {
-            const category = categories.find(c => c.id === t.categoryId) || { name: 'Без категории', icon: '❓' };
+            const category = categories.find(c => c.id === t.categoryId) || { name: 'Без категории', icon: 'help-circle-outline' };
             const account = accounts.find(a => a.id === t.accountId) || { name: 'Неизвестно' };
             
             return `
                 <tr>
                     <td>${this.formatDate(t.date)}</td>
                     <td>${t.description || '-'}</td>
-                    <td><span style="display: inline-flex; align-items: center; gap: 0.5rem;">${category.icon} ${category.name}</span></td>
+                    <td><span style="display: inline-flex; align-items: center; gap: 0.5rem;"><ion-icon name="${category.icon}"></ion-icon> ${category.name}</span></td>
                     <td>${account.name}</td>
                     <td class="amount-cell ${t.type}">${t.type === 'income' ? '+' : '-'}${this.formatCurrency(t.amount)}</td>
                     <td>
                         <div class="action-btns">
-                            <button class="action-btn edit" onclick="window.editTransaction('${t.id}')">✏️</button>
-                            <button class="action-btn delete" onclick="window.deleteTransaction('${t.id}')">🗑️</button>
+                            <button class="action-btn edit" onclick="window.editTransaction('${t.id}')"><ion-icon name="create-outline" style="font-size: 0.875rem;"></ion-icon></button>
+                            <button class="action-btn delete" onclick="window.deleteTransaction('${t.id}')"><ion-icon name="trash-outline" style="font-size: 0.875rem;"></ion-icon></button>
                         </div>
                     </td>
                 </tr>
@@ -263,13 +263,13 @@ export const ui = {
         return `
             <div class="category-item" style="border-left-color: ${category.color}">
                 <div class="category-info">
-                    <span class="category-icon-preview">${category.icon}</span>
+                    <span class="category-icon-preview"><ion-icon name="${category.icon}"></ion-icon></span>
                     <span>${category.name}</span>
                     <div class="category-color-dot" style="background: ${category.color}"></div>
                 </div>
                 <div class="action-btns">
-                    <button class="action-btn edit" onclick="window.editCategory('${category.id}')">✏️</button>
-                    <button class="action-btn delete" onclick="window.deleteCategory('${category.id}')">🗑️</button>
+                    <button class="action-btn edit" onclick="window.editCategory('${category.id}')"><ion-icon name="create-outline" style="font-size: 0.875rem;"></ion-icon></button>
+                    <button class="action-btn delete" onclick="window.deleteCategory('${category.id}')"><ion-icon name="trash-outline" style="font-size: 0.875rem;"></ion-icon></button>
                 </div>
             </div>
         `;
@@ -296,8 +296,8 @@ export const ui = {
                         <span class="account-type-badge">${typeLabels[a.type] || a.type}</span>
                     </div>
                     <div class="action-btns">
-                        <button class="action-btn edit" onclick="window.editAccount('${a.id}')">✏️</button>
-                        <button class="action-btn delete" onclick="window.deleteAccount('${a.id}')">🗑️</button>
+                        <button class="action-btn edit" onclick="window.editAccount('${a.id}')"><ion-icon name="create-outline" style="font-size: 0.875rem;"></ion-icon></button>
+                        <button class="action-btn delete" onclick="window.deleteAccount('${a.id}')"><ion-icon name="trash-outline" style="font-size: 0.875rem;"></ion-icon></button>
                     </div>
                 </div>
                 <div class="account-balance">${this.formatCurrency(a.balance || 0, a.currency)}</div>
@@ -324,7 +324,7 @@ export const ui = {
         const currentYear = now.getFullYear();
 
         container.innerHTML = budgets.map(b => {
-            const category = categories.find(c => c.id === b.categoryId) || { name: 'Неизвестно', icon: '❓' };
+            const category = categories.find(c => c.id === b.categoryId) || { name: 'Неизвестно', icon: 'help-circle-outline' };
             const spent = transactions
                 .filter(t => {
                     const tDate = new Date(t.date);
@@ -343,12 +343,12 @@ export const ui = {
                 <div class="card budget-card">
                     <div class="budget-header">
                         <div class="budget-category">
-                            <span>${category.icon}</span>
+                            <span><ion-icon name="${category.icon}" style="font-size: 1.25rem; margin-right: 0.5rem;"></ion-icon></span>
                             <span>${category.name}</span>
                         </div>
                         <div class="budget-actions">
-                            <button class="action-btn edit" onclick="window.editBudget('${b.id}')">✏️</button>
-                            <button class="action-btn delete" onclick="window.deleteBudget('${b.id}')">🗑️</button>
+                            <button class="action-btn edit" onclick="window.editBudget('${b.id}')"><ion-icon name="create-outline" style="font-size: 0.875rem;"></ion-icon></button>
+                            <button class="action-btn delete" onclick="window.deleteBudget('${b.id}')"><ion-icon name="trash-outline" style="font-size: 0.875rem;"></ion-icon></button>
                         </div>
                     </div>
                     <div class="budget-progress">
