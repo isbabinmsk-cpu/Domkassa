@@ -2,10 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>FinancePRO - Учёт домашних финансов с PostgreSQL</title>
-    <link rel="stylesheet" href="css/styles.css?v=3.0.0">
+    <link rel="stylesheet" href="css/styles.css?v=4.0.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -27,42 +29,42 @@
         <!-- Sidebar Navigation -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h1>💰 FinancePRO</h1>
+                <h1><ion-icon name="wallet-outline"></ion-icon> FinancePRO</h1>
                 <button class="sidebar-close" id="sidebar-close" aria-label="Закрыть меню">&times;</button>
             </div>
             <nav class="sidebar-nav">
                 <button class="nav-btn active" data-tab="dashboard">
-                    <span class="icon">📊</span>
+                    <ion-icon name="stats-chart-outline"></ion-icon>
                     <span>Обзор</span>
                 </button>
                 <button class="nav-btn" data-tab="transactions">
-                    <span class="icon">💳</span>
+                    <ion-icon name="swap-horizontal-outline"></ion-icon>
                     <span>Операции</span>
                 </button>
                 <button class="nav-btn" data-tab="budgets">
-                    <span class="icon">🎯</span>
+                    <ion-icon name="pie-chart-outline"></ion-icon>
                     <span>Бюджеты</span>
                 </button>
                 <button class="nav-btn" data-tab="categories">
-                    <span class="icon">🏷️</span>
+                    <ion-icon name="pricetag-outline"></ion-icon>
                     <span>Категории</span>
                 </button>
                 <button class="nav-btn" data-tab="accounts">
-                    <span class="icon">🏦</span>
+                    <ion-icon name="card-outline"></ion-icon>
                     <span>Счета</span>
                 </button>
                 <button class="nav-btn" data-tab="analytics">
-                    <span class="icon">📈</span>
+                    <ion-icon name="trending-up-outline"></ion-icon>
                     <span>Аналитика</span>
                 </button>
                 <button class="nav-btn" data-tab="settings">
-                    <span class="icon">⚙️</span>
+                    <ion-icon name="settings-outline"></ion-icon>
                     <span>Настройки</span>
                 </button>
             </nav>
             <div class="sidebar-footer">
                 <button id="theme-toggle" class="theme-btn" title="Переключить тему">
-                    <span class="icon">🌙</span>
+                    <ion-icon name="moon-outline"></ion-icon>
                 </button>
             </div>
         </aside>
@@ -78,7 +80,7 @@
                 
                 <div class="summary-cards">
                     <div class="card summary-card income">
-                        <div class="card-icon">📥</div>
+                        <div class="card-icon"><ion-icon name="arrow-down-circle-outline"></ion-icon></div>
                         <div class="card-content">
                             <h3>Доходы</h3>
                             <p class="amount" id="total-income">0 ₽</p>
@@ -86,7 +88,7 @@
                         </div>
                     </div>
                     <div class="card summary-card expense">
-                        <div class="card-icon">📤</div>
+                        <div class="card-icon"><ion-icon name="arrow-up-circle-outline"></ion-icon></div>
                         <div class="card-content">
                             <h3>Расходы</h3>
                             <p class="amount" id="total-expense">0 ₽</p>
@@ -94,7 +96,7 @@
                         </div>
                     </div>
                     <div class="card summary-card balance">
-                        <div class="card-icon">💰</div>
+                        <div class="card-icon"><ion-icon name="wallet-outline"></ion-icon></div>
                         <div class="card-content">
                             <h3>Баланс</h3>
                             <p class="amount" id="total-balance">0 ₽</p>
@@ -102,7 +104,7 @@
                         </div>
                     </div>
                     <div class="card summary-card savings">
-                        <div class="card-icon">🐷</div>
+                        <div class="card-icon"><ion-icon name="piggy-bank-outline"></ion-icon></div>
                         <div class="card-content">
                             <h3>Накопления</h3>
                             <p class="amount" id="total-savings">0 ₽</p>

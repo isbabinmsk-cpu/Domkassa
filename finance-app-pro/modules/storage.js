@@ -34,20 +34,20 @@ const STORAGE_KEYS = {
 };
 
 const defaultCategories = [
-    { id: 'cat_1', type: 'income', name: 'Зарплата', icon: '💰', color: '#10B981' },
-    { id: 'cat_2', type: 'income', name: 'Фриланс', icon: '💻', color: '#3B82F6' },
-    { id: 'cat_3', type: 'income', name: 'Инвестиции', icon: '📈', color: '#8B5CF6' },
-    { id: 'cat_4', type: 'income', name: 'Подарки', icon: '🎁', color: '#EC4899' },
-    { id: 'cat_5', type: 'income', name: 'Другое', icon: '📥', color: '#6B7280' },
-    { id: 'cat_6', type: 'expense', name: 'Продукты', icon: '🛒', color: '#F59E0B' },
-    { id: 'cat_7', type: 'expense', name: 'Жильё', icon: '🏠', color: '#EF4444' },
-    { id: 'cat_8', type: 'expense', name: 'Транспорт', icon: '🚗', color: '#3B82F6' },
-    { id: 'cat_9', type: 'expense', name: 'Здоровье', icon: '🏥', color: '#EC4899' },
-    { id: 'cat_10', type: 'expense', name: 'Развлечения', icon: '🎬', color: '#8B5CF6' },
-    { id: 'cat_11', type: 'expense', name: 'Одежда', icon: '👕', color: '#10B981' },
-    { id: 'cat_12', type: 'expense', name: 'Образование', icon: '📚', color: '#F59E0B' },
-    { id: 'cat_13', type: 'expense', name: 'Связь', icon: '📱', color: '#6B7280' },
-    { id: 'cat_14', type: 'expense', name: 'Другое', icon: '📤', color: '#9CA3AF' }
+    { id: 'cat_1', type: 'income', name: 'Зарплата', icon: 'cash-outline', color: '#10B981' },
+    { id: 'cat_2', type: 'income', name: 'Фриланс', icon: 'laptop-outline', color: '#3B82F6' },
+    { id: 'cat_3', type: 'income', name: 'Инвестиции', icon: 'trending-up-outline', color: '#8B5CF6' },
+    { id: 'cat_4', type: 'income', name: 'Подарки', icon: 'gift-outline', color: '#EC4899' },
+    { id: 'cat_5', type: 'income', name: 'Другое', icon: 'arrow-down-circle-outline', color: '#6B7280' },
+    { id: 'cat_6', type: 'expense', name: 'Продукты', icon: 'cart-outline', color: '#F59E0B' },
+    { id: 'cat_7', type: 'expense', name: 'Жильё', icon: 'home-outline', color: '#EF4444' },
+    { id: 'cat_8', type: 'expense', name: 'Транспорт', icon: 'car-outline', color: '#3B82F6' },
+    { id: 'cat_9', type: 'expense', name: 'Здоровье', icon: 'medical-outline', color: '#EC4899' },
+    { id: 'cat_10', type: 'expense', name: 'Развлечения', icon: 'film-outline', color: '#8B5CF6' },
+    { id: 'cat_11', type: 'expense', name: 'Одежда', icon: 'shirt-outline', color: '#10B981' },
+    { id: 'cat_12', type: 'expense', name: 'Образование', icon: 'book-outline', color: '#F59E0B' },
+    { id: 'cat_13', type: 'expense', name: 'Связь', icon: 'phone-portrait-outline', color: '#6B7280' },
+    { id: 'cat_14', type: 'expense', name: 'Другое', icon: 'ellipsis-horizontal-outline', color: '#9CA3AF' }
 ];
 
 const defaultAccounts = [
