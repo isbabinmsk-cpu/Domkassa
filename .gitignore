@@ -2,6 +2,9 @@
 # Dependencies
 node_modules/
 
+# Database
+finance.db
+
 # Environment
 .env
 .env.local
@@ -10,28 +13,19 @@ node_modules/
 # Logs
 *.log
 
-# Build artifacts
-dist/
-build/
-target/
+# Temporary files
+*.tmp
 
-# Cache
-.cache/
-.nyc_output/
-coverage/
-htmlcov/
-*.coverage
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Editor
+# Editor/IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*.tmp
+
+# Build outputs
+dist/
+build/
+target/
 
 # Python
 __pycache__/
@@ -39,46 +33,17 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-*.so
-*.egg-info/
-.eggs/
+env/
+venv/
+.venv/
+.ENV
 
 # Node.js
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Compiled and binary files
-*.exe
-*.dll
-*.so
-*.dylib
-*.class
-*.o
-*.obj
-*.out
-
-# Compressed files
-*.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
-*.zst
-*.lz4
-*.lzh
-*.cab
-*.arj
-*.rpm
-*.deb
-*.Z
-*.lz
-*.lzo
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
+# OS
+.DS_Store
+Thumbs.db
 ```
