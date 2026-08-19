@@ -1,83 +1,82 @@
-import pkg from 'pg';
-const { Pool } = pkg;
-import dotenv from 'dotenv';
+import initSqlJs from 'sql.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
+// Database path - can be committed to GitHub
+const DB_PATH = process.env.DATABASE_PATH || path.join(__dirname, '../../domkassa.db');
+
+let db = null;
 
 // Database initialization
 export const initDatabase = async () => {
   try {
-    // Create transactions table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS transactions (
-        id VARCHAR(50) PRIMARY KEY,
-        type VARCHAR(20) NOT NULL CHECK (type IN ('income', 'expense')),
-        amount DECIMAL(15, 2) NOT NULL CHECK (amount > 0),
-        category_id VARCHAR(50) NOT NULL,
-        account_id VARCHAR(50) NOT NULL,
-        date DATE NOT NULL,
-        description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+    const SQL = await initSqlJs();
+    
+    // Load existing database or create new one
+    if (fs.existsSync(DB_PATH)) {
+      const fileBuffer = fs.readFileSync(DB_PATH);
+      db = new SQL.Database(fileBuffer);
+      console.log('✅ Loaded SQLite database from', DB_PATH);
+    } else {
+      db = new SQL.Database();
+      console.log('✅ Created new SQLite database at', DB_PATH);
+    }
+    
+    // Create tables
+    db.run(`CREATE TABLE IF NOT EXISTS transactions (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL CHECK (type IN ('income', 'expense')),
+      amount REAL NOT NULL CHECK (amount > 0),
+      category_id TEXT NOT NULL,
+      account_id TEXT NOT NULL,
+      date TEXT NOT NULL,
+      description TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    )`);
 
-    // Create categories table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS categories (
-        id VARCHAR(50) PRIMARY KEY,
-        type VARCHAR(20) NOT NULL CHECK (type IN ('income', 'expense')),
-        name VARCHAR(100) NOT NULL,
-        icon VARCHAR(10),
-        color VARCHAR(7) DEFAULT '#2196F3'
-      )
-    `);
+    db.run(`CREATE TABLE IF NOT EXISTS categories (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL CHECK (type IN ('income', 'expense')),
+      name TEXT NOT NULL,
+      icon TEXT,
+      color TEXT DEFAULT '#2196F3'
+    )`);
 
-    // Create accounts table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS accounts (
-        id VARCHAR(50) PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        type VARCHAR(20) NOT NULL,
-        balance DECIMAL(15, 2) DEFAULT 0,
-        currency VARCHAR(3) DEFAULT 'RUB',
-        color VARCHAR(7) DEFAULT '#4CAF50',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+    db.run(`CREATE TABLE IF NOT EXISTS accounts (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      balance REAL DEFAULT 0,
+      currency TEXT DEFAULT 'RUB',
+      color TEXT DEFAULT '#4CAF50',
+      created_at TEXT DEFAULT (datetime('now'))
+    )`);
 
-    // Create budgets table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS budgets (
-        id VARCHAR(50) PRIMARY KEY,
-        category_id VARCHAR(50) NOT NULL,
-        limit_amount DECIMAL(15, 2) NOT NULL CHECK (limit_amount > 0),
-        color VARCHAR(7) DEFAULT '#4CAF50',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+    db.run(`CREATE TABLE IF NOT EXISTS budgets (
+      id TEXT PRIMARY KEY,
+      category_id TEXT NOT NULL,
+      limit_amount REAL NOT NULL CHECK (limit_amount > 0),
+      color TEXT DEFAULT '#4CAF50',
+      created_at TEXT DEFAULT (datetime('now'))
+    )`);
 
-    // Create settings table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS settings (
-        id SERIAL PRIMARY KEY,
-        theme VARCHAR(20) DEFAULT 'light',
-        currency VARCHAR(3) DEFAULT 'RUB',
-        language VARCHAR(5) DEFAULT 'ru'
-      )
-    `);
+    db.run(`CREATE TABLE IF NOT EXISTS settings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      theme TEXT DEFAULT 'light',
+      currency TEXT DEFAULT 'RUB',
+      language TEXT DEFAULT 'ru'
+    )`);
 
     // Insert default settings if not exists
-    await pool.query(`
-      INSERT INTO settings (theme, currency, language)
-      SELECT 'light', 'RUB', 'ru'
-      WHERE NOT EXISTS (SELECT 1 FROM settings)
-    `);
+    const settingsResult = db.exec('SELECT * FROM settings WHERE id = 1');
+    if (settingsResult.length === 0 || settingsResult[0].values.length === 0) {
+      db.run(`INSERT INTO settings (theme, currency, language) VALUES ('light', 'RUB', 'ru')`);
+    }
 
     // Insert default categories if not exists
     const defaultCategories = [
@@ -98,11 +97,8 @@ export const initDatabase = async () => {
     ];
 
     for (const cat of defaultCategories) {
-      await pool.query(`
-        INSERT INTO categories (id, type, name, icon, color)
-        VALUES ($1, $2, $3, $4, $5)
-        ON CONFLICT (id) DO NOTHING
-      `, [cat.id, cat.type, cat.name, cat.icon, cat.color]);
+      db.run(`INSERT OR IGNORE INTO categories (id, type, name, icon, color) VALUES (?, ?, ?, ?, ?)`,
+        [cat.id, cat.type, cat.name, cat.icon, cat.color]);
     }
 
     // Insert default accounts if not exists
@@ -113,13 +109,13 @@ export const initDatabase = async () => {
     ];
 
     for (const acc of defaultAccounts) {
-      await pool.query(`
-        INSERT INTO accounts (id, name, type, balance, currency, color)
-        VALUES ($1, $2, $3, $4, $5, $6)
-        ON CONFLICT (id) DO NOTHING
-      `, [acc.id, acc.name, acc.type, acc.balance, acc.currency, acc.color]);
+      db.run(`INSERT OR IGNORE INTO accounts (id, name, type, balance, currency, color) VALUES (?, ?, ?, ?, ?, ?)`,
+        [acc.id, acc.name, acc.type, acc.balance, acc.currency, acc.color]);
     }
 
+    // Save database to file
+    saveDatabase();
+    
     console.log('✅ Database initialized successfully');
   } catch (error) {
     console.error('❌ Database initialization error:', error);
@@ -127,177 +123,223 @@ export const initDatabase = async () => {
   }
 };
 
+// Helper function to save database to file
+const saveDatabase = () => {
+  if (db) {
+    const data = db.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(DB_PATH, buffer);
+  }
+};
+
+// Helper function to convert query results to array of objects
+const queryToObjects = (stmt) => {
+  const results = [];
+  while (stmt.step()) {
+    results.push(stmt.getAsObject());
+  }
+  stmt.free();
+  return results;
+};
+
 // Transaction operations
 export const dbTransactions = {
   async getAll() {
-    const result = await pool.query('SELECT * FROM transactions ORDER BY date DESC, created_at DESC');
-    return result.rows;
+    const stmt = db.prepare('SELECT * FROM transactions ORDER BY date DESC, created_at DESC');
+    return queryToObjects(stmt);
   },
 
   async getById(id) {
-    const result = await pool.query('SELECT * FROM transactions WHERE id = $1', [id]);
-    return result.rows[0];
+    const stmt = db.prepare('SELECT * FROM transactions WHERE id = ?');
+    stmt.bind([id]);
+    const result = queryToObjects(stmt);
+    return result[0] || null;
   },
 
   async create(transaction) {
     const { id, type, amount, categoryId, accountId, date, description } = transaction;
-    const result = await pool.query(`
-      INSERT INTO transactions (id, type, amount, category_id, account_id, date, description, created_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)
-      RETURNING *
-    `, [id, type, amount, categoryId, accountId, date, description]);
-    return result.rows[0];
+    db.run(`INSERT INTO transactions (id, type, amount, category_id, account_id, date, description, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+      [id, type, amount, categoryId, accountId, date, description]
+    );
+    saveDatabase();
+    return this.getById(id);
   },
 
   async update(id, updates) {
     const { type, amount, categoryId, accountId, date, description } = updates;
-    const result = await pool.query(`
-      UPDATE transactions 
-      SET type = COALESCE($2, type),
-          amount = COALESCE($3, amount),
-          category_id = COALESCE($4, category_id),
-          account_id = COALESCE($5, account_id),
-          date = COALESCE($6, date),
-          description = COALESCE($7, description),
-          updated_at = CURRENT_TIMESTAMP
-      WHERE id = $1
-      RETURNING *
-    `, [id, type, amount, categoryId, accountId, date, description]);
-    return result.rows[0];
+    db.run(`UPDATE transactions 
+            SET type = COALESCE(?, type),
+                amount = COALESCE(?, amount),
+                category_id = COALESCE(?, category_id),
+                account_id = COALESCE(?, account_id),
+                date = COALESCE(?, date),
+                description = COALESCE(?, description),
+                updated_at = datetime('now')
+            WHERE id = ?`,
+      [type, amount, categoryId, accountId, date, description, id]
+    );
+    saveDatabase();
+    return this.getById(id);
   },
 
   async delete(id) {
-    await pool.query('DELETE FROM transactions WHERE id = $1', [id]);
+    db.run('DELETE FROM transactions WHERE id = ?', [id]);
+    saveDatabase();
   }
 };
 
 // Category operations
 export const dbCategories = {
   async getAll() {
-    const result = await pool.query('SELECT * FROM categories ORDER BY type, name');
-    return result.rows;
+    const stmt = db.prepare('SELECT * FROM categories ORDER BY type, name');
+    return queryToObjects(stmt);
   },
 
   async create(category) {
     const { id, type, name, icon, color } = category;
-    const result = await pool.query(`
-      INSERT INTO categories (id, type, name, icon, color)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING *
-    `, [id, type, name, icon, color]);
-    return result.rows[0];
+    db.run(`INSERT INTO categories (id, type, name, icon, color) VALUES (?, ?, ?, ?, ?)`,
+      [id, type, name, icon, color]
+    );
+    saveDatabase();
+    return this.getById(id);
   },
 
   async update(id, updates) {
     const { type, name, icon, color } = updates;
-    const result = await pool.query(`
-      UPDATE categories 
-      SET type = COALESCE($2, type),
-          name = COALESCE($3, name),
-          icon = COALESCE($4, icon),
-          color = COALESCE($5, color)
-      WHERE id = $1
-      RETURNING *
-    `, [id, type, name, icon, color]);
-    return result.rows[0];
+    db.run(`UPDATE categories 
+            SET type = COALESCE(?, type),
+                name = COALESCE(?, name),
+                icon = COALESCE(?, icon),
+                color = COALESCE(?, color)
+            WHERE id = ?`,
+      [type, name, icon, color, id]
+    );
+    saveDatabase();
+    return this.getById(id);
   },
 
   async delete(id) {
-    await pool.query('DELETE FROM categories WHERE id = $1', [id]);
+    db.run('DELETE FROM categories WHERE id = ?', [id]);
+    saveDatabase();
+  },
+  
+  async getById(id) {
+    const stmt = db.prepare('SELECT * FROM categories WHERE id = ?');
+    stmt.bind([id]);
+    const result = queryToObjects(stmt);
+    return result[0] || null;
   }
 };
 
 // Account operations
 export const dbAccounts = {
   async getAll() {
-    const result = await pool.query('SELECT * FROM accounts ORDER BY name');
-    return result.rows;
+    const stmt = db.prepare('SELECT * FROM accounts ORDER BY name');
+    return queryToObjects(stmt);
   },
 
   async create(account) {
     const { id, name, type, balance, currency, color } = account;
-    const result = await pool.query(`
-      INSERT INTO accounts (id, name, type, balance, currency, color, created_at)
-      VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
-      RETURNING *
-    `, [id, name, type, balance, currency, color]);
-    return result.rows[0];
+    db.run(`INSERT INTO accounts (id, name, type, balance, currency, color, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`,
+      [id, name, type, balance, currency, color]
+    );
+    saveDatabase();
+    return this.getById(id);
   },
 
   async update(id, updates) {
     const { name, type, balance, currency, color } = updates;
-    const result = await pool.query(`
-      UPDATE accounts 
-      SET name = COALESCE($2, name),
-          type = COALESCE($3, type),
-          balance = COALESCE($4, balance),
-          currency = COALESCE($5, currency),
-          color = COALESCE($6, color)
-      WHERE id = $1
-      RETURNING *
-    `, [id, name, type, balance, currency, color]);
-    return result.rows[0];
+    db.run(`UPDATE accounts 
+            SET name = COALESCE(?, name),
+                type = COALESCE(?, type),
+                balance = COALESCE(?, balance),
+                currency = COALESCE(?, currency),
+                color = COALESCE(?, color)
+            WHERE id = ?`,
+      [name, type, balance, currency, color, id]
+    );
+    saveDatabase();
+    return this.getById(id);
   },
 
   async delete(id) {
-    await pool.query('DELETE FROM accounts WHERE id = $1', [id]);
+    db.run('DELETE FROM accounts WHERE id = ?', [id]);
+    saveDatabase();
+  },
+  
+  async getById(id) {
+    const stmt = db.prepare('SELECT * FROM accounts WHERE id = ?');
+    stmt.bind([id]);
+    const result = queryToObjects(stmt);
+    return result[0] || null;
   }
 };
 
 // Budget operations
 export const dbBudgets = {
   async getAll() {
-    const result = await pool.query('SELECT * FROM budgets ORDER BY created_at DESC');
-    return result.rows;
+    const stmt = db.prepare('SELECT * FROM budgets ORDER BY created_at DESC');
+    return queryToObjects(stmt);
   },
 
   async create(budget) {
     const { id, categoryId, limit: limitAmount, color } = budget;
-    const result = await pool.query(`
-      INSERT INTO budgets (id, category_id, limit_amount, color, created_at)
-      VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
-      RETURNING *
-    `, [id, categoryId, limitAmount, color]);
-    return result.rows[0];
+    db.run(`INSERT INTO budgets (id, category_id, limit_amount, color, created_at)
+            VALUES (?, ?, ?, ?, datetime('now'))`,
+      [id, categoryId, limitAmount, color]
+    );
+    saveDatabase();
+    return this.getById(id);
   },
 
   async update(id, updates) {
     const { categoryId, limit: limitAmount, color } = updates;
-    const result = await pool.query(`
-      UPDATE budgets 
-      SET category_id = COALESCE($2, category_id),
-          limit_amount = COALESCE($3, limit_amount),
-          color = COALESCE($4, color)
-      WHERE id = $1
-      RETURNING *
-    `, [id, categoryId, limitAmount, color]);
-    return result.rows[0];
+    db.run(`UPDATE budgets 
+            SET category_id = COALESCE(?, category_id),
+                limit_amount = COALESCE(?, limit_amount),
+                color = COALESCE(?, color)
+            WHERE id = ?`,
+      [categoryId, limitAmount, color, id]
+    );
+    saveDatabase();
+    return this.getById(id);
   },
 
   async delete(id) {
-    await pool.query('DELETE FROM budgets WHERE id = $1', [id]);
+    db.run('DELETE FROM budgets WHERE id = ?', [id]);
+    saveDatabase();
+  },
+  
+  async getById(id) {
+    const stmt = db.prepare('SELECT * FROM budgets WHERE id = ?');
+    stmt.bind([id]);
+    const result = queryToObjects(stmt);
+    return result[0] || null;
   }
 };
 
 // Settings operations
 export const dbSettings = {
   async get() {
-    const result = await pool.query('SELECT theme, currency, language FROM settings WHERE id = 1');
-    return result.rows[0] || { theme: 'light', currency: 'RUB', language: 'ru' };
+    const stmt = db.prepare('SELECT theme, currency, language FROM settings WHERE id = 1');
+    const result = queryToObjects(stmt);
+    return result[0] || { theme: 'light', currency: 'RUB', language: 'ru' };
   },
 
   async update(updates) {
     const { theme, currency, language } = updates;
-    const result = await pool.query(`
-      UPDATE settings 
-      SET theme = COALESCE($2, theme),
-          currency = COALESCE($3, currency),
-          language = COALESCE($4, language)
-      WHERE id = 1
-      RETURNING *
-    `, [1, theme, currency, language]);
-    return result.rows[0];
+    db.run(`UPDATE settings 
+            SET theme = COALESCE(?, theme),
+                currency = COALESCE(?, currency),
+                language = COALESCE(?, language)
+            WHERE id = 1`,
+      [theme, currency, language]
+    );
+    saveDatabase();
+    return this.get();
   }
 };
 
-export default pool;
+export default db;
