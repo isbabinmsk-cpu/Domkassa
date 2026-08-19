@@ -14,8 +14,11 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static files
-app.use(express.static(path.join(__dirname, '../')));
+// Serve static files with correct paths
+app.use('/', express.static(path.join(__dirname, '../')));
+app.use('/js', express.static(path.join(__dirname, '../js')));
+app.use('/css', express.static(path.join(__dirname, '../css')));
+app.use('/modules', express.static(path.join(__dirname, '../modules')));
 
 // Initialize database
 initDatabase()
