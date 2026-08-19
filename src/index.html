@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Семейный бюджет</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div class="login-container">
+                <h1>💰 Семейный бюджет</h1>
+                <form id="login-form">
+                    <input type="text" id="login-username" placeholder="Логин" required>
+                    <input type="password" id="login-password" placeholder="Пароль" required>
+                    <button type="submit" class="btn-primary">Войти</button>
+                </form>
+                <form id="register-form">
+                    <h3>Регистрация</h3>
+                    <input type="text" id="register-username" placeholder="Логин" required>
+                    <input type="password" id="register-password" placeholder="Пароль" required>
+                    <button type="submit" class="btn-secondary">Зарегистрироваться</button>
+                </form>
+                <p id="login-message"></p>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="main-app" class="screen">
+            <header class="app-header">
+                <h1 id="page-title">Главная</h1>
+                <button id="logout-btn" class="btn-icon">🚪</button>
+            </header>
+
+            <main id="content-area">
+                <!-- Home Tab -->
+                <div id="tab-home" class="tab-content active">
+                    <div class="balance-card">
+                        <h2>Общий баланс</h2>
+                        <p class="balance-amount" id="total-balance">0 ₽</p>
+                        <div class="balance-details">
+                            <div class="income">
+                                <span>Доходы</span>
+                                <strong id="total-income">0 ₽</strong>
+                            </div>
+                            <div class="expense">
+                                <span>Расходы</span>
+                                <strong id="total-expense">0 ₽</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-transactions">
+                        <h3>Последние операции</h3>
+                        <div id="recent-list"></div>
+                    </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div id="tab-transactions" class="tab-content">
+                    <div class="filter-bar">
+                        <select id="filter-type">
+                            <option value="all">Все</option>
+                            <option value="income">Доходы</option>
+                            <option value="expense">Расходы</option>
+                        </select>
+                        <input type="month" id="filter-month">
+                    </div>
+                    <div id="transactions-list"></div>
+                </div>
+
+                <!-- Categories Tab -->
+                <div id="tab-categories" class="tab-content">
+                    <div class="category-sections">
+                        <div class="category-section">
+                            <h3>📥 Доходы</h3>
+                            <div id="income-categories"></div>
+                        </div>
+                        <div class="category-section">
+                            <h3>📤 Расходы</h3>
+                            <div id="expense-categories"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accounts Tab -->
+                <div id="tab-accounts" class="tab-content">
+                    <div id="accounts-list"></div>
+                    <button id="add-account-btn" class="fab-small">+</button>
+                </div>
+            </main>
+
+            <!-- Bottom Tab Bar with FAB -->
+            <nav class="tab-bar">
+                <button class="tab-btn active" data-tab="home">
+                    <span>🏠</span>
+                    <small>Главная</small>
+                </button>
+                <button class="tab-btn" data-tab="transactions">
+                    <span>📋</span>
+                    <small>Операции</small>
+                </button>
+                
+                <button id="fab-add" class="fab-main">
+                    <span>+</span>
+                </button>
+                
+                <button class="tab-btn" data-tab="categories">
+                    <span>🏷️</span>
+                    <small>Категории</small>
+                </button>
+                <button class="tab-btn" data-tab="accounts">
+                    <span>💳</span>
+                    <small>Счета</small>
+                </button>
+            </nav>
+
+            <!-- Add Transaction Modal -->
+            <div id="modal-transaction" class="modal">
+                <div class="modal-content">
+                    <h2>Новая операция</h2>
+                    <form id="transaction-form">
+                        <div class="type-selector">
+                            <button type="button" class="type-btn active" data-type="expense">Расход</button>
+                            <button type="button" class="type-btn" data-type="income">Доход</button>
+                        </div>
+                        
+                        <input type="number" id="trans-amount" placeholder="Сумма" required step="0.01">
+                        
+                        <select id="trans-category" required>
+                            <option value="">Выберите категорию</option>
+                        </select>
+                        
+                        <select id="trans-subcategory">
+                            <option value="">Подкатегория (необязательно)</option>
+                        </select>
+                        
+                        <select id="trans-account" required>
+                            <option value="">Выберите счет</option>
+                        </select>
+                        
+                        <input type="text" id="trans-description" placeholder="Описание">
+                        <input type="date" id="trans-date" required>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="btn-cancel modal-close">Отмена</button>
+                            <button type="submit" class="btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Add Account Modal -->
+            <div id="modal-account" class="modal">
+                <div class="modal-content">
+                    <h2>Новый счет</h2>
+                    <form id="account-form">
+                        <input type="text" id="account-name" placeholder="Название счета" required>
+                        <input type="number" id="account-balance" placeholder="Начальный баланс" step="0.01">
+                        <select id="account-currency">
+                            <option value="RUB">₽ Рубли</option>
+                            <option value="USD">$ Доллары</option>
+                            <option value="EUR">€ Евро</option>
+                        </select>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-cancel modal-close">Отмена</button>
+                            <button type="submit" class="btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Add Category Modal -->
+            <div id="modal-category" class="modal">
+                <div class="modal-content">
+                    <h2>Новая категория</h2>
+                    <form id="category-form">
+                        <select id="category-type" required>
+                            <option value="income">Доход</option>
+                            <option value="expense">Расход</option>
+                        </select>
+                        <input type="text" id="category-name" placeholder="Название категории" required>
+                        <input type="text" id="category-parent" placeholder="Родительская категория (для подкатегории)">
+                        <div class="modal-actions">
+                            <button type="button" class="btn-cancel modal-close">Отмена</button>
+                            <button type="submit" class="btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js" type="module"></script>
+</body>
+</html>
