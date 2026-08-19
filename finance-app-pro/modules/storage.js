@@ -15,9 +15,9 @@ async function checkServerAvailability() {
   }
 }
 
-let useServer = null;
+let useServer = false; // По умолчанию используем localStorage
 
-// Initialize storage mode
+// Initialize storage mode - проверяем сервер один раз
 async function initStorageMode() {
   if (useServer === null) {
     useServer = await checkServerAvailability();
