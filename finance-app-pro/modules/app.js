@@ -38,11 +38,92 @@ export const app = {
     },
 
     setupEventListeners() {
-        // Navigation
+        // Mobile menu toggle
+        document.getElementById('menu-toggle')?.addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar && overlay) {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+            }
+        });
+
+        // Close sidebar when clicking overlay
+        document.getElementById('sidebar-overlay')?.addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar && overlay) {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            }
+        });
+
+        // Close sidebar button
+        document.getElementById('sidebar-close')?.addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar && overlay) {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            }
+        });
+
+        // Bottom navigation for mobile
+        document.querySelectorAll('.bottom-nav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tabId = e.currentTarget.dataset.tab;
+                ui.switchTab(tabId);
+                
+                // Update active state in bottom nav
+                document.querySelectorAll('.bottom-nav-btn').forEach(b => b.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                
+                // Update active state in sidebar nav too
+                document.querySelectorAll('.nav-btn').forEach(b => {
+                    b.classList.remove('active');
+                    if (b.dataset.tab === tabId) {
+                        b.classList.add('active');
+                    }
+                });
+                
+                // Close sidebar on mobile after navigation
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                if (sidebar && overlay) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+                
+                // Render charts when switching to analytics tab
+                if (tabId === 'analytics') {
+                    const period = document.getElementById('analytics-period')?.value || 'month';
+                    ui.renderAnalyticsCharts(period);
+                }
+                
+                // Refresh budgets when switching to budgets tab
+                if (tabId === 'budgets') {
+                    ui.renderBudgets();
+                }
+            });
+        });
+
+        // Sidebar Navigation
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const tabId = e.currentTarget.dataset.tab;
                 ui.switchTab(tabId);
+                
+                // Update active state in sidebar nav
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                
+                // Update active state in bottom nav too
+                document.querySelectorAll('.bottom-nav-btn').forEach(b => {
+                    b.classList.remove('active');
+                    if (b.dataset.tab === tabId) {
+                        b.classList.add('active');
+                    }
+                });
                 
                 // Render charts when switching to analytics tab
                 if (tabId === 'analytics') {
@@ -217,6 +298,8 @@ export const app = {
         ui.renderTransactionsTable();
         ui.renderCategorySelects();
         ui.renderAccountSelects();
+        ui.renderCategoriesList();
+        ui.renderAccountsGrid();
         ui.renderBudgets();
         ui.renderMainChart();
         ui.renderExpensePieChart();
