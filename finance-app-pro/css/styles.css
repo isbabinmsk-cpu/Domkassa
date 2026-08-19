@@ -420,13 +420,15 @@ body {
 .transactions-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px;
 }
 
 .transactions-table th,
 .transactions-table td {
-    padding: 1rem;
+    padding: 0.75rem 0.5rem;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
 }
 
 .transactions-table th {
@@ -930,42 +932,6 @@ form {
     pointer-events: auto;
 }
 
-/* Bottom Navigation for Mobile */
-.bottom-nav {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--bg-primary);
-    border-top: 1px solid var(--border-color);
-    z-index: 99;
-    padding: 0.5rem 0;
-    justify-content: space-around;
-}
-
-.bottom-nav-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 0.7rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    transition: var(--transition);
-}
-
-.bottom-nav-btn .icon {
-    font-size: 1.5rem;
-}
-
-.bottom-nav-btn.active {
-    color: var(--primary-color);
-}
-
 /* Responsive Design */
 @media (max-width: 1024px) {
     .dashboard-grid,
@@ -1002,11 +968,6 @@ form {
         margin-left: 0;
         padding: 1rem;
         padding-top: 70px;
-        padding-bottom: 80px;
-    }
-    
-    .bottom-nav {
-        display: flex;
     }
     
     .summary-cards {
@@ -1034,6 +995,12 @@ form {
     .categories-container,
     .accounts-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .transactions-table th,
+    .transactions-table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.85rem;
     }
 }
 
