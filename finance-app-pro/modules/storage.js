@@ -312,11 +312,12 @@ export const storage = {
             }
         }
         // Fallback to localStorage
-        const accounts = this.getAccounts();
+        const accountsData = localStorage.getItem(STORAGE_KEYS.ACCOUNTS);
+        const accounts = accountsData ? JSON.parse(accountsData) : defaultAccounts;
         account.id = 'acc_' + Date.now();
         account.createdAt = new Date().toISOString();
         accounts.push(account);
-        this.saveAccounts(accounts);
+        localStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(accounts));
         return account;
     },
 

@@ -8,8 +8,15 @@ let charts = {};
 
 export const ui = {
     initTheme() {
-        const settings = storage.getSettings();
-        let theme = settings.theme;
+        // First check localStorage for saved theme, then settings
+        let savedTheme = localStorage.getItem('financepro_theme');
+        
+        if (!savedTheme) {
+            const settings = storage.getSettings();
+            savedTheme = settings.theme;
+        }
+        
+        let theme = savedTheme || 'light';
         
         if (theme === 'auto') {
             theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -35,6 +42,8 @@ export const ui = {
         }
         
         document.documentElement.setAttribute('data-theme', theme);
+        // Save to both settings and localStorage for persistence
+        localStorage.setItem('financepro_theme', theme);
         storage.updateSettings({ theme: theme === 'auto' ? 'auto' : theme });
         this.updateThemeIcon(theme);
     },
@@ -43,6 +52,11 @@ export const ui = {
         const icon = document.querySelector('#theme-toggle ion-icon');
         if (icon) {
             icon.setAttribute('name', theme === 'dark' ? 'sunny-outline' : 'moon-outline');
+        }
+        // Also update the select in settings
+        const themeSelect = document.getElementById('setting-theme');
+        if (themeSelect) {
+            themeSelect.value = theme;
         }
     },
 
